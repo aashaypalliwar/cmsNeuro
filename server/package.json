@@ -1,0 +1,12 @@
+{
+  "name": "cms-neuro",
+  "version": "1.0.0",
+  "description": "A comprehensive community discussion forum with ineherent leaderboard to track activity of the members.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "P. Aashay, B. Navaneeth, D. Shrirang, P. Rahul",
+  "license": "ISC"
+}
