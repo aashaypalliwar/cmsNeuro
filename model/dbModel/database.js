@@ -48,7 +48,7 @@ class Database {
   }
 }
 
-const DBSOURCE = "./db.sqlite";
+const DBSOURCE = "./Database/db.sqlite";
 const db = new Database(DBSOURCE);
 
 module.exports = db;

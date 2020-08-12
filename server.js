@@ -1,7 +1,6 @@
 const app = require("./app");
-const config = require("./utils/config");
-const db = require("./model/dbModel/database");
-const PORT = config.PORT;
+const { PORT } = require("./utils/config");
+require("./model/dbModel/database");
 
 app.listen(PORT, () => {
   console.log(`server is running on ${PORT} ...`);
