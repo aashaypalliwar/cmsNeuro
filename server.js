@@ -1,11 +1,11 @@
-const app = require('./app');
-const config = require('./utils/config');
-
+const app = require("./app");
+const config = require("./utils/config");
+const db = require("./model/dbModel/database");
 const PORT = config.PORT;
 
 app.listen(PORT, () => {
-    console.log(`server is running on ${PORT} ...`);
-})
+  console.log(`server is running on ${PORT} ...`);
+});
 
 /**
  * 1. Require app       -done
