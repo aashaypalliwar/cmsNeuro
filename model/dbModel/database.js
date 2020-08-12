@@ -9,30 +9,9 @@ class Database {
         console.error(err.message);
       } else {
         console.log("Connected to the SQLite database.");
-        this.db.run(`CREATE TABLE IF NOT EXISTS users (${schemas.userSchema})`);
-        this.db.run(
-          `CREATE TABLE IF NOT EXISTS topics (${schemas.topicSchema})`
-        );
-        this.db.run(`CREATE TABLE IF NOT EXISTS tasks (${schemas.taskSchema})`);
-        this.db.run(`CREATE TABLE IF NOT EXISTS tags (${schemas.tagSchema})`);
-        this.db.run(
-          `CREATE TABLE IF NOT EXISTS comments (${schemas.commentSchema})`
-        );
-        this.db.run(
-          `CREATE TABLE IF NOT EXISTS assignmentRequests (${schemas.assignmentRequestSchema})`
-        );
-        this.db.run(
-          `CREATE TABLE IF NOT EXISTS assignments (${schemas.assignmentSchema})`
-        );
-        this.db.run(
-          `CREATE TABLE IF NOT EXISTS announcements (${schemas.announcementSchema})`
-        );
-        this.db.run(
-          `CREATE TABLE IF NOT EXISTS allotments (${schemas.allotmentSchema})`
-        );
-        this.db.run(
-          `CREATE TABLE IF NOT EXISTS accesses (${schemas.accessSchema})`
-        );
+        for(let schema in schemas){
+          this.db.run(`CREATE TABLE IF NOT EXISTS ${schemas[schema].tableName} (${schemas[schema].tableSchema})`)
+        }
       }
     });
   }
