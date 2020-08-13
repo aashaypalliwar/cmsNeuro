@@ -175,3 +175,36 @@ exports.resetPassword = catchAsync(async (token, newPassword) => {
 
   return user;
 });
+
+exports.bulkSignup = catchAsync(async (emails) => {
+  //array of emails
+  emails.map((email) => {
+    //Generate a random OTP and hash it using bcrpyt
+    const OTP = String(Math.floor(Math.random() * 1000 + 1));
+    const tempPassword = await bcrypt.hash(OTP, 12);
+
+    const tempName = email.split("@")[0]; //temp name the email characters  e.g dsp13
+
+    const timestamp = Date.now(); //timestamp
+    const queryParams = [tempName, email, "user", timestamp, tempPassword];
+
+    //insert into database
+    await db.query(
+      `INSERT INTO users (name, email, role,timestamp, password) VALUES (?, ?, ?,?,?)`,
+      queryParams
+    );
+    //Message
+    const message = `Dear ${tempName}, \n You are added to the Neuromancers Society\n The tasks and leaderboard will be on this temp.com.\n Login to the page using your college email id and this OTP, change the password after this login.\n \n ${OTP} `;
+      //sendEmail
+    try {
+      sendEmail({
+        email,
+        subject: "Welcome to Neuromancers",
+        message,
+      });
+    } catch (err) {
+      console.log(err.message);
+      return next(new AppError("There was an error sending email", 500));
+    }
+  });
+});

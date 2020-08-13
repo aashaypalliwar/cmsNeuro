@@ -79,8 +79,10 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 });
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
+  //email from user
   const email = req.body.email;
 
+  //send mail to the user
   await authLogic.forgotPassword(email);
 
   res.status(200).json({
@@ -90,9 +92,22 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 });
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
+  //take token and newPassword as input
   const { token, newPassword } = req.body;
 
   const user = await authLogic.resetPassword(token, newPassword);
 
   createSendToken(user, 200, res);
+});
+
+exports.bulkSignup = catchAsync(async (req, res, next) => {
+  //emails sepearted by commas
+  const emails = req.body.emails.split(",");
+
+  await authLogic.bulkSignup(emails);
+
+  res.status(200).json({
+    success,
+    message: "Users successfully signed up",
+  });
 });
