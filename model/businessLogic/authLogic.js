@@ -178,7 +178,7 @@ exports.resetPassword = catchAsync(async (token, newPassword) => {
 
 exports.bulkSignup = catchAsync(async (emails) => {
   //array of emails
-  emails.map((email) => {
+  emails.map(async (email) => {
     //Generate a random OTP and hash it using bcrpyt
     const OTP = String(Math.floor(Math.random() * 1000 + 1));
     const tempPassword = await bcrypt.hash(OTP, 12);
@@ -195,7 +195,7 @@ exports.bulkSignup = catchAsync(async (emails) => {
     );
     //Message
     const message = `Dear ${tempName}, \n You are added to the Neuromancers Society\n The tasks and leaderboard will be on this temp.com.\n Login to the page using your college email id and this OTP, change the password after this login.\n \n ${OTP} `;
-      //sendEmail
+    //sendEmail
     try {
       sendEmail({
         email,
