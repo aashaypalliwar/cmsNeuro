@@ -4,7 +4,7 @@ module.exports.userSchema = {
     name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
     role TEXT NOT NULL,
-    designation TEXT NOT NULL,
+    designation TEXT,
     old_rank INTEGER,
     current_rank INTEGER,
     points INTEGER DEFAULT 0,
