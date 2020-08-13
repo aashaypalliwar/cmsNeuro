@@ -11,11 +11,15 @@
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "helmet": "^4.0.0",
     "jsonwebtoken": "^8.5.1",
     "nodemailer": "^6.4.11",
-    "sqlite3": "^5.0.0"
+    "sqlite3": "^5.0.0",
+    "xss-clean": "^0.1.1"
   }
 }
