@@ -7,6 +7,10 @@ const cookieParser = require("cookie-parser");
 const AppError = require("./utils/appError.js");
 const app = express();
 
+
+const boardRouter = require('./routes/boardRoutes');
+
+
 app.use(cors());
 
 app.options("*", cors());
@@ -21,8 +25,8 @@ app.use(express.json());
 app.use(cookieParser());
 
 
-// app.use('/api/users',userRouter);
-// app.use('/api/board',boardRouter);
+app.use('/api/v1/users',userRouter);
+app.use('/api/v1/board',boardRouter);
 
 // app.all("*", (req, res, next) => {
 //     next(new AppError(`No url found found for ${req.url}`, 404));
