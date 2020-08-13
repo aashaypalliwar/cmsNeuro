@@ -6,7 +6,12 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const AppError = require("./utils/appError.js");
 const app = express();
+
 const userRouter = require("./routes/userRouter");
+const announcementRouter = require('./routes/announcementRouter');
+const topicRouter = require('./routes/topicRouter');
+const taskRouter = require('./routes/taskRouter');
+
 
 app.use(cors());
 
@@ -21,11 +26,13 @@ app.use(xss());
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/api/users", userRouter);
-// app.use('/api/board',boardRouter);
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/board/announcements",announcementRouter);
+app.use("/api/v1/board/topics",topicRouter);
+app.use("/api/v1/board/topics/:topicId/tasks",taskRouter);
 
-// app.all("*", (req, res, next) => {
-//     next(new AppError(`No url found found for ${req.url}`, 404));
-//   });
+app.all("*", (req, res, next) => {
+    next(new AppError(`No url found found for ${req.url}`, 404));
+  });
 
 module.exports = app;
