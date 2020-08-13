@@ -1,6 +1,21 @@
 const authLogic = require("../model/businessLogic/authLogic");
+
+//utils
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
+
+// const {JWT_COOKIE_EXPIRES_IN} = require("../utils/config");
+
+const createSendToken = (user, statusCode, res) => {
+  const token = authLogic.signToken(user._id);
+  res.status(statusCode).json({
+    status: "success",
+    token,
+    data: {
+      user,
+    },
+  });
+};
 
 exports.protect = catchAsync(async (req, res, next) => {
   let token;
@@ -31,3 +46,53 @@ exports.restrictTo = (...roles) => {
     next();
   };
 };
+
+exports.login = catchAsync(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  // 1) Check if email and password exist
+  if (!email || !password) {
+    return next(new AppError("Please provide email and password!", 400));
+  }
+  // 2) Check if user exists && password is correct
+  const user = await authLogic.checkCredentials(email, password);
+
+  // 3) If everything ok, send token to client
+  createSendToken(user, 200, res);
+});
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  //take data from request
+  const data = {
+    id: req.user.id,
+    currentPassword: req.body.password,
+    newPassword: req.body.newPassword,
+  };
+
+  await authLogic.updatePassword(
+    data.id,
+    data.currentPassword,
+    data.newPassword
+  );
+
+  createSendToken(req.user, 200, res);
+});
+
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+  const email = req.body.email;
+
+  await authLogic.forgotPassword(email);
+
+  res.status(200).json({
+    status: "success",
+    message: "Token sent to mail",
+  });
+});
+
+exports.resetPassword = catchAsync(async (req, res, next) => {
+  const { token, newPassword } = req.body;
+
+  const user = await authLogic.resetPassword(token, newPassword);
+
+  createSendToken(user, 200, res);
+});
