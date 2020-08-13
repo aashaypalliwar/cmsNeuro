@@ -17,7 +17,7 @@ exports.getTask = catchAsync(async (req, res, next) => {
 
 exports.createTask = catchAsync(async (req, res, next) => {
   const task = {
-    user_id: req.body.user.id,
+    user_id: req.user.id,
     heading: req.body.heading,
     description: req.body.description,
     topic_id: req.body.topic_id,
@@ -59,7 +59,7 @@ exports.getAssignments = catchAsync(async (req, res, next) => {
 
 exports.createAssignments = catchAsync(async (req, res, next) => {
   const task_id = req.params.task_id;
-  const user_id = req.body.user_id;
+  const user_id = req.user.id;
 
   await taskLogic.createAssignment(task_id, user_id);
 
