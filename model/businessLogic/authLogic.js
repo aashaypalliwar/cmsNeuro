@@ -5,7 +5,7 @@ const db = require("../dbModel/database");
 const catchAsync = require("../../utils/catchAsync");
 const { promisify } = require("util");
 const crypto = require("crypto");
-const sendEmail = require("../../utils/sendEmail");
+//const sendEmail = require("../../utils/sendEmail");
 
 //sign jwt
 const signToken = (id) => {
