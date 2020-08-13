@@ -17,7 +17,7 @@ exports.getTask = catchAsync(async (req, res, next) => {
 
 exports.createTask = catchAsync(async (req, res, next) => {
   const task = {
-    user_id: req.body.user.id,
+    user_id: req.user.id,
     heading: req.body.heading,
     description: req.body.description,
     topic_id: req.body.topic_id,
