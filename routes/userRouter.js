@@ -4,50 +4,74 @@ const authController = require("../controller/authController");
 
 const router = express.Router();
 
-router.post("/auth/login", authController.login); //LOGIN
+//LOGIN
+router.post("/auth/login", authController.login);
 
-router.post("/auth/forgotPassword", authController.forgotPassword); //  FORGOT PASSWORD
+//  FORGOT PASSWORD
+router.post("/auth/forgotPassword", authController.forgotPassword);
 
+// RESET PASSWORD
+router.patch("/auth/resetPassword", authController.resetPassword);
+
+//UPDATE PASSWORD
 router.patch(
-  //BLACKLIST/WHITELIST
+  "/updatePassword",
+  authController.protect,
+  authController.updatePassword
+);
+
+//ADD USER(S) WITH ROLE AND DESIGNATION
+router.post(
+  "/newUser",
+  authController.protect,
+  authController.restrictTo("superAdmin"),
+  authController.bulkSignup
+);
+
+//GET OWN PROFILE
+router.get("/me", authController.protect, userController.getMe);
+
+//GET ONE USER
+router.get(
+  "/:id",
+  authController.protect,
+  authController.restrictTo("superAdmin", "admin"),
+  userController.getOne
+);
+
+//BLACKLIST/WHITELIST
+router.patch(
   "/:id/blacklist",
   authController.protect,
   authController.restrictTo("superAdmin"),
   userController.blacklist
 );
 
+//CHANGE DESIGNATION
 router.patch(
-  //CHANGE DESIGNATION
   "/:id/changeDesignation",
   authController.protect,
   authController.restrictTo("superAdmin"),
   userController.changeDesignation
 );
 
+//CHANGE ROLE
 router.patch(
-  //CHANGE ROLE
   "/:id/changeRole",
   authController.protect,
   authController.restrictTo("superAdmin"),
   userController.changeRole
 );
 
-router.post(
-  //ADD USER WITH ROLE AND DESIGNATION
-  "/newUser",
-  authController.protect,
-  authController.restrictTo("superAdmin"),
-  userController.addUser
-);
-
+//REMOVE USER
 router.delete(
-  //REMOVE USER
   "/:id",
   authController.protect,
   authController.restrictTo("superAdmin"),
   userController.deleteUser
 );
 
-router.patch("/me", authController.protect, userController.addBio); //ADD/CHANGE BIO
+//ADD/CHANGE BIO
+router.patch("/me", authController.protect, userController.addBio);
 
 module.exports = router;
