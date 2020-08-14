@@ -172,3 +172,17 @@ exports.removeTagfromTask = catchAsync(async (req, res, next) => {
     message: "Tag removed successfully",
   });
 });
+
+exports.getCommentsByTask = catchAsync(async (req, res, next) => {
+  const limit = req.params.limit;
+  const id = req.params.task_id;
+  let offset = null;
+  if (req.params.offset) offset = req.params.offset;
+  const comments = await taskLogic.getComments(id, limit, offset);
+  if (limit > 0 && comments === null)
+    return next(new AppError("Task not found", 404));
+  res.status(200).json({
+    comments,
+    status: "success",
+  });
+});

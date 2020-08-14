@@ -260,3 +260,17 @@ exports.removeTag = catchAsync(async (tag_id) => {
 
   await db.query(`DELETE FROM tags WHERE id = ${tag_id}`);
 });
+
+exports.getComments = async (id, limit, offset) => {
+  try {
+    const task = await db.query(`SELECT * FROM tasks WHERE id=${id}`);
+    if (!task.data.length) return null;
+
+    const comments = await db.query(
+      `SELECT * FROM comments WHERE task_id=${id} LIMIT ${limit} OFFSET ${offset}`
+    );
+    return comments;
+  } catch (err) {
+    return null;
+  }
+};
