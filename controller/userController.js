@@ -84,3 +84,28 @@ exports.getOne = catchAsync(async (req, res, next) => {
     status: "success",
   });
 });
+
+exports.getLeaderBoard = catchAsync(async (req, res, next) => {
+  const board = await userLogic.getLeaderBoard();
+
+  res.status(200).json({
+    status: "success",
+    board,
+  });
+});
+
+exports.awardPoints = catchAsync(async (req, res, next) => {
+  const pointData = {
+    user_id: req.body.id,
+    reason: req.body.reason,
+    points: req.body.points,
+    timestamp: Date.now(),
+  };
+
+  await userLogic.awardPoints(pointData);
+
+  res.status(200).json({
+    status: "success",
+    message: "points awarded successfully",
+  });
+});
