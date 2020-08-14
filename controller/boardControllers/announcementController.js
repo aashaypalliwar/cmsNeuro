@@ -29,3 +29,28 @@ exports.createAnnouncement = catchAsync(async(req,res,next) => {
         newAnnouncement
     })
 })
+
+exports.getOneAnnouncement = catchAsync(async(req,res,next) => {
+    const announcement_id = req.params.announcement_id;
+    
+    const announcement = await announcementLogic.getOne(announcement_id);
+    
+    return res.status(201).json({
+        "status" : "success",
+        announcement
+    })
+})
+
+exports.updateAnnouncement = catchAsync(async(req,res,next) => {
+    const announcement_id = req.params.announcement_id;
+    const updatedBody = req.body.updatedAnnouncement;
+    
+    const updatedAnnouncement = await announcementLogic.updateOne(announcement_id, updatedBody);
+    // // console.log(updatedAnnouncement.data);
+
+    // res.status(200).json({
+    //     "status" : "Success",
+    //     updatedAnnouncement
+    // })
+})
+
