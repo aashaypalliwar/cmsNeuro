@@ -2,9 +2,9 @@ const express = require("express");
 const router = express.Router();
 
 const authController = require("./../controller/authController");
-const announcementController = require("./../controller/boardControllers/announcementController");
+const topicController = require("./../controller/boardControllers/topicController");
 
-router.use(authController.protect);
+//router.use(authController.protect);
 
 router
   .route("/")

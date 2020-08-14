@@ -4,12 +4,13 @@ const catchAsync = require("./../../utils/catchAsync");
 const announcementLogic = require("./../../model/businessLogic/boardLogic/announcementLogic");
 
 exports.getAllAnnouncements = catchAsync(async (req,res,next) => {
-    const Announcements = await announcementLogic.getAll;
+    const announcements = await announcementLogic.getAll();
 
+    console.log(announcements);
     res.status(201).json({
         "status":"success",
         "data" : {
-            Announcements
+            announcements
         }
     })
 })
@@ -20,7 +21,7 @@ exports.createAnnouncement = catchAsync(async(req,res,next) => {
         user_id: 12
         //req.user.id
     }
-
+    
     const newAnnouncement = await announcementLogic.createOne(announcement);
     // const newBody = await newAnnouncement.body;
     console.log(newAnnouncement);
@@ -33,24 +34,30 @@ exports.createAnnouncement = catchAsync(async(req,res,next) => {
 exports.getOneAnnouncement = catchAsync(async(req,res,next) => {
     const announcement_id = req.params.announcement_id;
     
-    const announcement = await announcementLogic.getOne(announcement_id);
-    
+    const announcement =  await announcementLogic.getOne(announcement_id);
+    console.log(announcement);
     return res.status(201).json({
         "status" : "success",
         announcement
     })
 })
 
+
 exports.updateAnnouncement = catchAsync(async(req,res,next) => {
     const announcement_id = req.params.announcement_id;
     const updatedBody = req.body.updatedAnnouncement;
     
     const updatedAnnouncement = await announcementLogic.updateOne(announcement_id, updatedBody);
-    // // console.log(updatedAnnouncement.data);
 
-    // res.status(200).json({
-    //     "status" : "Success",
-    //     updatedAnnouncement
-    // })
+    res.status(200).json({
+        "status" : "Success",
+        updatedAnnouncement
+    })
+})
+
+exports.archiveAnnouncement = catchAsync(async(req,res,next) => {
+    const announcement_id  = req.params.announcement_id;
+    const archived = announcementLogic.archiveOne(announcement_id);
+    console.log(archived);
 })
 

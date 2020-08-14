@@ -1,39 +1,61 @@
 const catchAsync = require("../../../utils/catchAsync");
-const AppError = require("../../../utils/appError");
-
 const db = require("./../../dbModel/database");
 
-exports.getAll = catchAsync(async() => {
-    const announcements = await db.query(`SELECT * FROM announcements`);
-    if(announcements.data.length === null) return null;
-    return announcements.data;
-})
+//Gets all the announcements
+exports.getAll = async() => {
+    try{
+        const announcements = await db.query(`SELECT * FROM announcements`);
+        return announcements.data;  
+    } catch (err){
+        console.log(err);
+        return err;
+    }
+}
+//Gets a particular announcement
+exports.getOne = async(announcement_id) => {
+    try{
+        return (await db.query(`SELECT * FROM announcements WHERE id = ${announcement_id}`));
+    } catch(err) {
+        console.log(err);
+    }
+}
+//Creates an announcement
+exports.createOne = async(announcement) =>{
+    try{
+        const queryParams = [
+            announcement.body,
+            announcement.user_id,
+            Date.now()
+        ]
+        console.log(queryParams);
+        return (await db.query(`INSERT INTO announcements (body,user_id,timestamp) VALUES(?,?,?)`, queryParams));
+    }catch(err){
+            console.log(err);
+    }
+}
 
-exports.createOne = catchAsync(async(announcement) => {
-    const queryParams = [
-        announcement.body,
-        announcement.user_id,
-        Date.now()
-    ]
-    console.log(queryParams);
-    const newAnnouncement = await db.query(`INSERT INTO announcements (body,user_id,timestamp) VALUES(?,?,?)`, queryParams);
-    return newAnnouncement.data;
-})
 
-exports.getOne = catchAsync(async(announcement_id) => {
-    const announcement = await db.query(`SELECT * FROM announcements WHERE id = ${announcement_id}`);
-    if(announcement.data.length === 0) return null;
-    console.log(announcement.data);
-    return announcement.data;
-})
+//Updates the announcement
+exports.updateOne = async(announcement_id, updatedBody) => {
+    try {
+        return (await db.query(`UPDATE announcements SET body = '${updatedBody}' WHERE id = ${announcement_id}`));
+    } catch(err) {
+        console.log(err)
+    }
+} 
 
-exports.updateOne = catchAsync(async(announcement_id, updatedBody) => {
-    const announcement = await db.query(`SELECT * FROM announcements WHERE id = ${announcement_id}`);
-    if(announcement.data.length === 0) return null;
-    console.log(announcement.data);
-    const updatedAnnouncement = await db.query(`UPDATE announcements SET body = ${updatedBody} WHERE id = ${announcement_id}`);
-    console.log(updatedAnnouncement);
-    // const updatedAnnouncement = await db.query(`SELECT * FROM announcements WHERE id = ${id}`);
-    //console.log(updatedAnnouncement.data);
-    // return updatedAnnouncement;
-})
+//Archiving the announcement
+exports.archiveOne = async(announcement_id) => {
+    try{
+        const announcement = await db.query(`SELECT * FROM announcements WHERE id = ${announcement_id}`);
+    if(!announcement.data.length) {
+        return 0;
+    } else {
+        return 1;
+    }
+    } catch(err) {
+        console.log("Hi");
+        console.log(err);
+    }
+} 
+//about the updatedTimeStamp

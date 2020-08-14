@@ -15,12 +15,15 @@ router
   .get(announcementController.getAllAnnouncements);
 
 router
+    .route('/:announcement_id/archive')
+    .delete(
+//         authController.restrictTo('admin'),
+         announcementController.archiveAnnouncement
+     )
+router
     .route('/:announcement_id')
     .get(announcementController.getOneAnnouncement)
-//     .delete('/archive',
-//         authController.restrictTo('admin'),
-//         announcementController.archive
-//     )
+    
     .patch(
         // authController.restrictTo('admin'), 
         announcementController.updateAnnouncement
