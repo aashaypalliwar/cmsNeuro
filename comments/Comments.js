@@ -17,7 +17,7 @@ module.exports.setupSocket = (server) => {
         `INSERT INTO comments (text,timestamp,user_id,task_id) VALUES (?,?,?,?)`,
         queryParms
       );
-      io.emit("newComment", newComment);
+      io.in(taskId).emit("newComment", newComment); //for now, roomName=taskId
     });
   });
 };
