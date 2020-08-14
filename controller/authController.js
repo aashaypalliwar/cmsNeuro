@@ -7,7 +7,7 @@ const catchAsync = require("../utils/catchAsync");
 // const {JWT_COOKIE_EXPIRES_IN} = require("../utils/config");
 
 const createSendToken = (user, statusCode, res) => {
-  const token = authLogic.signToken(user._id);
+  const token = authLogic.signToken(user.id);
   res.status(statusCode).json({
     status: "success",
     token,

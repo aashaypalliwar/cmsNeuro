@@ -5,8 +5,7 @@ const sendEmail = require("../../utils/sendEmail");
 
 exports.blacklist = catchAsync(async (id) => {
   const user = await db.query(`SELECT * FROM users WHERE id=${id}`);
-  if (!user.data.length)
-    return next(new AppError("No user exists with the given id", 404));
+  if (!user.data.length) return user;
   await db.query(
     `UPDATE users SET blacklisted=${
       user.data[0].blacklisted ? 1 : 0
@@ -36,8 +35,7 @@ exports.blacklist = catchAsync(async (id) => {
 
 exports.changeDesignation = catchAsync(async (id, designation) => {
   const user = await db.query(`SELECT * FROM users WHERE id=${id}`);
-  if (!user.data.length)
-    return next(new AppError("No user exists with the given id", 404));
+  if (!user.data.length) return user;
   await db.query(
     `UPDATE users SET designation=${designation} WHERE id=${user.data[0].id}`
   );
@@ -48,8 +46,7 @@ exports.changeDesignation = catchAsync(async (id, designation) => {
 
 exports.changeRole = catchAsync(async (id, role) => {
   const user = await db.query(`SELECT * FROM users WHERE id=${id}`);
-  if (!user.data.length)
-    return next(new AppError("No user exists with the given id", 404));
+  if (!user.data.length) return user;
   await db.query(`UPDATE users SET role=${role} WHERE id=${user.data[0].id}`);
   const updatedUser = await db.query(`SELECT * FROM users WHERE id=${id}`);
 
@@ -58,10 +55,9 @@ exports.changeRole = catchAsync(async (id, role) => {
 
 exports.deleteUser = catchAsync(async (id) => {
   const user = await db.query(`SELECT * FROM users WHERE id=${id}`);
-  if (!user.data.length)
-    return next(new AppError("No user exists with the given id", 404));
+  if (!user.data.length) return user;
   await db.query(`DELETE FROM users WHERE id=${id}`);
-  return;
+  return user;
 });
 
 exports.addBio = catchAsync(async (id, bio) => {
@@ -73,7 +69,5 @@ exports.addBio = catchAsync(async (id, bio) => {
 
 exports.getOne = catchAsync(async (id) => {
   const user = await db.query(`SELECT * FROM users WHERE id=${id}`);
-  if (!user.data.length)
-    return next(new AppError("No users exists with the given id", 404));
   return user;
 });

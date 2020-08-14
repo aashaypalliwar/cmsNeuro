@@ -5,6 +5,8 @@ const catchAsync = require("../utils/catchAsync");
 exports.blacklist = catchAsync(async (req, res, next) => {
   const id = req.params.id;
   const updatedUser = await userLogic.blacklist(id);
+  if (!updatedUser.data.length)
+    return next(new AppError("No user found with this id", 404));
   return res.json({
     user: updatedUser,
     status: "success",
@@ -19,6 +21,8 @@ exports.changeDesignation = catchAsync(async (req, res, next) => {
   const id = req.params.id;
   const changeTo = req.body.designation;
   const updatedUser = await userLogic.changeDesignation(id, changeTo);
+  if (!updatedUser.data.length)
+    return next(new AppError("No user found with this id", 404));
   return res.json({
     user: updatedUser,
     status: "success",
@@ -30,6 +34,8 @@ exports.changeRole = catchAsync(async (req, res, next) => {
   const id = req.params.id;
   const changeTo = req.body.role;
   const updatedUser = await userLogic.changeRole(id, changeTo);
+  if (!updatedUser.data.length)
+    return next(new AppError("No user found with this id", 404));
   return res.json({
     user: updatedUser,
     status: "success",
@@ -39,7 +45,9 @@ exports.changeRole = catchAsync(async (req, res, next) => {
 
 exports.deleteUser = catchAsync(async (req, res, next) => {
   const id = req.params.id;
-  await userLogic.deleteUser(id);
+  const deletedUser = await userLogic.deleteUser(id);
+  if (!deletedUser.data.length)
+    return next(new AppError("No user found with this id", 404));
   return res.json({
     status: "success",
     message: "User deleted",
@@ -69,6 +77,8 @@ exports.getMe = catchAsync(async (req, res, next) => {
 exports.getOne = catchAsync(async (req, res, next) => {
   const id = req.params.id;
   const user = await userLogic.getOne(id);
+  if (!user.data.length)
+    return next(new AppError("No user found with this id", 404));
   return res.json({
     user,
     status: "success",
