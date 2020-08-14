@@ -71,3 +71,29 @@ exports.getOne = catchAsync(async (id) => {
   const user = await db.query(`SELECT * FROM users WHERE id=${id}`);
   return user;
 });
+
+exports.getLeaderBoard = catchAsync(async () => {
+  const users = await db.query(
+    `SELECT id,name,points FROM users WHERE tracking_point=1 ORDER BY points`
+  );
+
+  return users.data;
+});
+
+exports.awardPoints = catchAsync(async (data) => {
+  const user = await db.query(`SELECT * FROM users WHERE id=${data.user_id}`);
+
+  if (!user.data.length)
+    return next(new AppError("No user found with this id", 404));
+
+  const points = user.data[0].points;
+  const newPoints = points + data.points;
+  await db.query(
+    `UPDATE users SET points=${newPoints} WHERE id=${data.user_id}`
+  );
+  const queryParams = [data.user_id, data.points, data.reason, data.tmestamp];
+  await db.query(
+    `INSERT INTO users (user_id, points, reason , timestamp) VALUES (?,?,?,?)`,
+    queryParams
+  );
+});

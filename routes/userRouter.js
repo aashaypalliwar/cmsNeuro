@@ -20,6 +20,8 @@ router.patch(
   authController.updatePassword
 );
 
+router.get("/currentleaderboard", userController.getLeaderBoard);
+
 //ADD USER(S) WITH ROLE AND DESIGNATION
 router.post(
   "/newUser",
@@ -69,6 +71,13 @@ router.delete(
   authController.protect,
   authController.restrictTo("superAdmin"),
   userController.deleteUser
+);
+
+router.patch(
+  "/:id/awardPoints",
+  authController.protect,
+  authController.restrictTo("superAdmin", "admin"),
+  userController.awardPoints
 );
 
 //ADD/CHANGE BIO
