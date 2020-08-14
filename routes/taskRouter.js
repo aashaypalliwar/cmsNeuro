@@ -57,4 +57,10 @@ router
     taskController.acceptRequest
   );
 
+//get paginated comments------offset is the index after which to get the next ${limit} comments
+//if offset is not provided, it will get the first ${limit} comments
+router
+  .route("/:task_id/comments/:limit/:offset")
+  .get(taskController.getCommentsByTask);
+
 module.exports = router;
