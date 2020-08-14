@@ -96,7 +96,7 @@ exports.getAssignments = catchAsync(async (req, res, next) => {
 
 exports.createAssignment = catchAsync(async (req, res, next) => {
   const task_id = req.params.task_id;
-  const user_id = req.body.user_id;
+  const user_id = req.user.id;
 
   await taskLogic.createAssignment(task_id, user_id);
 

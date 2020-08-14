@@ -6,8 +6,8 @@ const bcrypt = require("bcryptjs");
 //utils
 const catchAsync = require("../../utils/catchAsync");
 const AppError = require("../../utils/appError");
-const { JWT_SECRET, JWT_EXPIRES_IN } = require("../../utils/config");
-const sendEmail = require("../../utils/sendEmail");
+const { JWT_SECRET, JWT_EXPIRES_IN } = require("./../../utils/config");
+const sendEmail = require("./../../utils/sendEmail");
 
 const db = require("../dbModel/database");
 
