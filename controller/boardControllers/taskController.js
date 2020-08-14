@@ -2,10 +2,26 @@ const taskLogic = require("../../model/businessLogic/boardLogic/taskLogic");
 const AppError = require("../../utils/appError");
 const catchAsync = require("../../utils/catchAsync");
 
+exports.accessScope = () => {
+  return (req, res, next) => {
+    const userRole = req.user.role;
+    const user_id = req.user.id;
+    const topic_id = req.params.topic_id;
+
+    if (!taskLogic.checkScope(userRole, user_id, topic_id))
+      return next(
+        new AppError("You do not have permission to view this task", 403)
+      );
+
+    next();
+  };
+};
+
 //tasks Stuff//
 
 exports.getTask = catchAsync(async (req, res, next) => {
-  const id = req.params.id;
+  const id = req.params.task_id;
+  const user_id = req.user.id;
 
   const task = await taskLogic.getOne(id);
 
@@ -20,7 +36,7 @@ exports.createTask = catchAsync(async (req, res, next) => {
     user_id: req.user.id,
     heading: req.body.heading,
     description: req.body.description,
-    topic_id: req.body.topic_id,
+    topic_id: req.params.topic_id,
     deadline: req.body.deadline,
   };
 
@@ -29,6 +45,27 @@ exports.createTask = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: "success",
     task,
+  });
+});
+
+exports.getAllTasks = catchAsync(async (req, res, next) => {
+  const topic_id = req.params.topic_id;
+  const tasks = await taskLogic.getAll(topic_id);
+
+  res.status(200).json({
+    status: "success",
+    count: tasks.length,
+    tasks,
+  });
+});
+
+exports.archiveTask = catchAsync(async (req, res, next) => {
+  const task_id = req.params.task_id;
+  await taskLogic.archiveOne(task_id);
+
+  res.status(200).json({
+    status: "success",
+    message: "Task archived Successfully",
   });
 });
 
@@ -57,7 +94,7 @@ exports.getAssignments = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.createAssignments = catchAsync(async (req, res, next) => {
+exports.createAssignment = catchAsync(async (req, res, next) => {
   const task_id = req.params.task_id;
   const user_id = req.body.user_id;
 
@@ -69,7 +106,7 @@ exports.createAssignments = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.removeAssignments = catchAsync(async (req, res, next) => {
+exports.removeAssignment = catchAsync(async (req, res, next) => {
   const assignment_id = req.body.assignment_id;
   await taskLogic.removeAssignment(assignment_id);
   res.status(200).json({
@@ -92,7 +129,7 @@ exports.getAssignmentRequests = catchAsync(async (req, res, next) => {
 
 exports.requestAssignment = catchAsync(async (req, res, next) => {
   const user_id = req.user.id;
-  const task_id = req.body.task_id;
+  const task_id = req.params.task_id;
 
   await taskLogic.requestAssignment(user_id, task_id);
 

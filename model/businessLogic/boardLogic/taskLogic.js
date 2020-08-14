@@ -4,11 +4,51 @@ const AppError = require("../../../utils/appError");
 
 const db = require("../../dbModel/database");
 
+//scope Check //
+
+exports.checkScope = catchAsync(async (userRole, user_id, topic_id) => {
+  const Scope = await db.query(
+    `SELECT scope FROM topics WHERE id=${task.topic_id}`
+  );
+
+  const scope = Scope.data[0].scope;
+
+  if (userRole === "superAdmin") return true;
+  else if (userRole === "admin") {
+    if (scope === "superAdmin") return false;
+    return true;
+  } else if (userRole === "member") {
+    if (scope === "member") return true;
+    if (scope === "private") {
+      const check = await db.query(
+        `SELECT * FROM accesses WHERE topic_id=${topic_id} AND user_id=${user_id}`
+      );
+
+      if (check.data.length) return true;
+      return false;
+    }
+
+    return false;
+  } else {
+    if (scope === "private") {
+      const check = await db.query(
+        `SELECT * FROM accesses WHERE topic_id=${topic_id} AND user_id=${user_id}`
+      );
+
+      if (!check.data.length) return false;
+      return true;
+    }
+
+    return false;
+  }
+});
+
 //CRU Operations Tasks//
 
 exports.getOne = catchAsync(async (id) => {
   let task = await db.query(`SELECT * FROM users WHERE id=${id}`);
   if (!task.data.length) return next(new AppError("Task not found", 404));
+
   //find tags
   const tags = await db.query(`SELECT tag FROM tags WHERE task_id=${id}`);
   if (tags.data.length) {
@@ -22,6 +62,7 @@ exports.getOne = catchAsync(async (id) => {
 
 exports.getAll = catchAsync(async (topic_id, filters) => {
   //if any other filters are required
+
   let filterString;
 
   if (filters) {
@@ -88,7 +129,17 @@ exports.updateOne = catchAsync(async (id, newData) => {
 
 //Archive Task
 
-exports.archiveOne = catchAsync(async (task_id) => {});
+exports.archiveOne = catchAsync(async (task_id) => {
+  const task = await db.query(`SELECT * FROM tasks WHERE id = ${task_id}`);
+
+  if (!task.data.length)
+    return next(new AppError("No task found with this id", 404));
+
+  //Send the comments to the superAdmins and Admins
+  // to be implemented after comments setup
+
+  await db.query(`DELETE FROM tasks WHERE id = ${task_id}`);
+});
 
 //assignable status
 exports.toggle = catchAsync(async (task_id) => {
