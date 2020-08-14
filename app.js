@@ -8,7 +8,7 @@ const AppError = require("./utils/appError.js");
 const app = express();
 
 const userRouter = require("./routes/userRouter");
-// const topicRouter = require("./routes/topicRouter");
+const topicRouter = require("./routes/topicRouter");
 const taskRouter = require("./routes/taskRouter");
 const announcementRouter = require("./routes/announcementRouter");
 
@@ -26,7 +26,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use("/api/v1/users", userRouter);
-// app.use("/api/v1/board/topics",topicRouter);
+app.use("/api/v1/board/topics",topicRouter);
 app.use("/api/v1/board/announcements", announcementRouter);
 app.use("/api/v1/board/topics/:topic_id/tasks", taskRouter);
 
