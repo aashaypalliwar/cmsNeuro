@@ -1,10 +1,3 @@
-/**
- * Send email
- * Initially write code for simple email with some text and subject to a given a list of email addresses. Later modify to satisfy our needs.
- */
-
-//copied code from my Social Media Project as it had no dependency on change of database, it sends text
-
 const nodemailer = require("nodemailer");
 
 const sendEmail = async (options) => {

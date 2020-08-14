@@ -16,7 +16,7 @@ router
   .get(taskController.getAllTasks)
   .post(taskController.createTask);
 
-//get task ,  archive task and toggle status of assignment
+//get task, archive task and toggle status of assignment
 router
   .route("/:task_id")
   .get(taskController.getTask)
@@ -47,7 +47,7 @@ router
     taskController.removeAssignment
   );
 
-//request assignmet to tasks, accept requests
+//request assignment to tasks, accept requests
 
 router
   .route("/:task_id/assignmentRequest")

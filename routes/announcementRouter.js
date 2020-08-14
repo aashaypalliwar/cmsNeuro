@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+// const { protect, restrictTo } = require("./../controller/authController");
 
 const authController = require("./../controller/authController");
 const announcementController = require("./../controller/boardControllers/announcementController");

@@ -25,6 +25,8 @@ app.use(xss());
 app.use(express.json());
 app.use(cookieParser());
 
+//"/api/auth"
+
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/board/topics",topicRouter);
 app.use("/api/v1/board/announcements", announcementRouter);

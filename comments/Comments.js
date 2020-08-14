@@ -21,3 +21,16 @@ module.exports.setupSocket = (server) => {
     });
   });
 };
+
+// Authentication done
+// Sender: admin/superadmin/member emit info on message -> {sender, comment, taskid}
+// cache :
+// if scope of task is there stored on cache, use that for comparison. else query the db
+// and store in cache. 
+// Cache stores: task scope -> task_id : { scope: scope, assigned: [] } 
+// check scope of sender === scope of task (query) ? if scope is private, task's scope has senderID?
+// if good to go, store the comment in db
+// emitters: superadmin, admin, member {task info, comment}
+// frontend of a user will have role based listeners, and frontend will have ids of the users' private 
+// tasks. eg 202, 208, 110 is taskID then fe will to all these 3. listen
+// backend: io.emit(taskid.toString(), comment); this will be if it is private and everything is ok

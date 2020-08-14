@@ -80,7 +80,7 @@ router.patch(
   userController.awardPoints
 );
 
-//ADD/CHANGE BIO
+//CHANGE BIO
 router.patch("/me", authController.protect, userController.addBio);
 
 module.exports = router;
