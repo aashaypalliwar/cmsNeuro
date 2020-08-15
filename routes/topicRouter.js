@@ -1,19 +1,31 @@
 const express = require("express");
 const router = express.Router();
 
-const authController = require("./../controller/authController");
-const topicController = require("./../controller/boardControllers/topicController");
+const {protect,restrictTo} = require("./../controller/authController");
+const {getAllTopics,createTopic,archiveTopic,getATopic,updateTopic} = require("./../controller/boardControllers/topicController");
 
-//router.use(authController.protect);
+router.use(protect);
 
 router
   .route("/")
-  .get(topicController.getAllTopics)
-  .post(topicController.createTopic);
+  .get(getAllTopics)
+  .post(
+    restrictTo("admin","superAdmin"),
+    createTopic
+    );
+router
+  .route("/:topicId/archive")
+  .delete(
+    restrictTo("admin","superAdmin"),
+    archiveTopic
+    )
 
 router
   .route("/:topicId")
-  .get(topicController.getATopic)
-  .delete(topicController.archive);
+  .get(getATopic)
+  .patch(
+    restrictTo("admin","superAdmin"),
+    updateTopic
+  )
 
 module.exports = router;

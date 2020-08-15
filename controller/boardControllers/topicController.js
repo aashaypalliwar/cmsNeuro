@@ -1,31 +1,85 @@
 const express = require("express");
-const catchAsync = require("../../utils/catchAsync");
-const topicLogic = require("./../../model/businessLogic/boardLogic/topicLogic");
+const {fetchAllTopics, createOneTopic, getOneTopic, archiveOneTopic, updateOneTopic} = require("./../../model/businessLogic/boardLogic/topicLogic");
+const AppError = require("../../utils/appError");
 
 exports.getAllTopics = async (req, res, next) => {
-  const topics = topicLogic.getAll();
+  try {
+    const topics = fetchAllTopics(next);
 
-  res.status(200).json({
-    status: "success",
-    // length: topics.length,
-    topics,
-  });
+    res.status(200).json({
+      status: "success",
+      length: topics.length,
+      topics,
+    });
+  } catch (error) {
+    console.log(error)
+    return next(new AppError('Something went wrong',500));
+  }
+} 
+
+exports.createTopic = async (req, res, next) => {
+  try {
+    const newTopic = {
+      heading: req.body.heading,
+      description: req.body.description,
+      scope: req.scope,
+    };
+  
+    const Topic = await createOneTopic(newTopic,next);
+  
+    res.status(200).json({
+      status: "success",
+      Topic
+    });
+  } catch (error) {
+    console.log(error)
+    return next(new AppError('Something went wrong',500));
+  }
+} 
+exports.getATopic = async (req, res, next) => {
+  try {
+      const topicId = req.params.topicId;
+      const topic = await getOneTopic(topicId,next);
+
+      res.status(201).json({
+        "status" : "success",
+        topic
+      })
+  } catch (error) {
+    console.log(error);
+    return next(new AppError('Something went wrong',500));
+  }
 };
-exports.createTopic = catchAsync(async (req, res, next) => {
-  const newTopic = {
-    heading: req.body.heading,
-    description: req.body.description,
-    scope: req.scope,
-  };
 
-  const Topic = await topicLogic.createOne(newTopic);
+exports.archiveTopic = async (req, res, next) => {
+  try {
+    const topicId = req.params.topicId;
+    await archiveOneTopic(topicId);
+    res.status(200).json({
+      "status" : "success",
+      "message" : "Archived successfully"
+    }) 
+  } catch (error) {
+    console.log(error);
+    return next(new AppError('Something went wrong',500));
+  }
+};
+exports.updateTopic = async(req,res,next) => {
+  try {
+      const topicDetails = {
+        topicId : req.params.topicId,
+        newHeading: req.body.heading,
+        newDescription: req.body.description,
+        scope: req.body.scope
+      }
 
-  res.status(200).json({
-    status: "success",
-    Topic,
-  });
-});
-
-exports.getATopic = catchAsync(async (req, res, next) => {});
-
-exports.archive = catchAsync(async (req, res, next) => {});
+      const updatedTopic = await updateOneTopic(topicDetails,next);
+      res.status(200).json({
+        "status" : "success",
+        updatedTopic
+      })
+  } catch (error) {
+    console.log(error);
+    return next(new AppError('Something went wrong',500));
+  }
+}

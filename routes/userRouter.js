@@ -8,8 +8,7 @@ const {
   changeRole,
   deleteUser,
   awardPoints,
-  addBio,
-  bulkSignup,
+  addBio
 } = require("../controller/userController");
 const { protect, restrictTo } = require("../controller/authController");
 

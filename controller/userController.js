@@ -1,14 +1,14 @@
-const userLogic = require("../model/businessLogic/userLogic");
+const {blacklist, changeDesignation,changeRole,deleteUser,addBio,fetchOneUser,fetchPointHistoryofUser,fetchAllUsers,awardPoints} = require("../model/businessLogic/userLogic");
 const AppError = require("../utils/appError");
 
 const {
-  updateLeaderboard,
+  updateLeaderboard
 } = require("../model/businessLogic/boardLogic/leaderboardLogic");
 
 exports.blacklist = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const updatedUser = await userLogic.blacklist(id, next);
+    const updatedUser = await  blacklist(id, next);
     if (!updatedUser.length)
       return next(new AppError("No user found with this id", 404));
     res.status(200).json({
@@ -28,7 +28,7 @@ exports.changeDesignation = async (req, res, next) => {
   try {
     const id = req.params.id;
     const changeTo = req.body.designation;
-    const updatedUser = await userLogic.changeDesignation(id, changeTo, next);
+    const updatedUser = await  changeDesignation(id, changeTo, next);
     if (!updatedUser.length)
       return next(new AppError("No user found with this id", 404));
     res.status(200).json({
@@ -45,7 +45,7 @@ exports.changeRole = async (req, res, next) => {
   try {
     const id = req.params.id;
     const changeTo = req.body.role;
-    const updatedUser = await userLogic.changeRole(id, changeTo, next);
+    const updatedUser = await  changeRole(id, changeTo, next);
     if (!updatedUser.length)
       return next(new AppError("No user found with this id", 404));
     res.status(200).json({
@@ -61,7 +61,7 @@ exports.changeRole = async (req, res, next) => {
 exports.deleteUser = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const deletedUser = await userLogic.deleteUser(id, next);
+    const deletedUser = await  deleteUser(id, next);
     if (!deletedUser.length)
       return next(new AppError("No user found with this id", 404));
     res.status(200).json({
@@ -77,7 +77,7 @@ exports.addBio = async (req, res, next) => {
   try {
     const id = req.user.id;
     const bio = req.body.bio;
-    const updatedUser = await userLogic.addBio(id, bio, next);
+    const updatedUser = await  addBio(id, bio, next);
     res.status(200).json({
       user: updatedUser,
       status: "success",
@@ -91,7 +91,7 @@ exports.addBio = async (req, res, next) => {
 exports.getOwnProfile = async (req, res, next) => {
   try {
     const id = req.user.id;
-    const user = await userLogic.fetchOneUser(id, next);
+    const user = await  fetchOneUser(id, next);
 
     res.status(200).json({
       user,
@@ -105,12 +105,12 @@ exports.getOwnProfile = async (req, res, next) => {
 exports.getOneUser = async (req, res, next) => {
   try {
     const id = req.params.id;
-    let user = await userLogic.fetchOneUser(id, next);
+    let user = await  fetchOneUser(id, next);
     if (!user.length)
       return next(new AppError("No user found with this id", 404));
 
     if (user.tracking_points) {
-      const pointHistory = await userLogic.fetchPointHistoryofUser(id, next);
+      const pointHistory = await  fetchPointHistoryofUser(id, next);
       user.allotments = pointHistory;
     }
     res.status(200).json({
@@ -125,7 +125,7 @@ exports.getOneUser = async (req, res, next) => {
 
 exports.getAllUsers = async (req, res, next) => {
   try {
-    const users = await userLogic.fetchAllUsers();
+    const users = await  fetchAllUsers();
     res.status(200).json({
       users,
       status: "success",
@@ -145,7 +145,7 @@ exports.awardPoints = async (req, res, next) => {
       timestamp: Date.now(),
     };
 
-    await userLogic.awardPoints(pointData, next);
+    await  awardPoints(pointData, next);
     await updateLeaderboard(next);
 
     res.status(200).json({
