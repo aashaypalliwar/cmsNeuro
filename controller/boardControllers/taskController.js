@@ -19,17 +19,21 @@ exports.accessScope = () => {
 
 //tasks Stuff//
 
-exports.getTask = catchAsync(async (req, res, next) => {
-  const id = req.params.task_id;
-  const user_id = req.user.id;
+exports.getTask = async (req, res, next) => {
+  try {
+    const id = req.params.task_id;
+    const user_id = req.user.id;
 
-  const task = await taskLogic.getOne(id);
+    const task = await taskLogic.fetchTask(id, next);
 
-  res.status(200).json({
-    status: "success",
-    task,
-  });
-});
+    res.status(200).json({
+      status: "success",
+      task,
+    });
+  } catch (err) {
+    return next(new AppError("Something went wrong", 500));
+  }
+};
 
 exports.createTask = catchAsync(async (req, res, next) => {
   const task = {

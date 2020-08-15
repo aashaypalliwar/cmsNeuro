@@ -107,9 +107,11 @@ module.exports.allotmentSchema = {
   tableName: "allotments",
   tableSchema: `id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
+    awarded_by INTEGER NOT NULL,
     timestamp INTEGER NOT NULL,
     points INTEGER NOT NULL,
     reason TEXT NOT NULL,
     FOREIGN KEY(user_id) REFERENCES users(id)
+    FOREIGN KEY(awarded_by) REFERENCES users(id)
     `,
 };
