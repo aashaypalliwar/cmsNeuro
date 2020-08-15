@@ -35,7 +35,7 @@ exports.protect = async (req, res, next) => {
     if (!token) {
       return next(new AppError("You are not logged in", 401));
     }
-    req.user = authLogic.protect(token, next);
+    req.user = await authLogic.protect(token, next);
     next();
   } catch (err) {
     return next(new AppError("Something went wrong", 500));

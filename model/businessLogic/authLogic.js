@@ -12,7 +12,7 @@ const db = require("../dbModel/database");
 
 //sign jwt
 exports.signToken = (id) => {
-  console.log(process.env.PORT);
+  // console.log(process.env.PORT);
   return jwt.sign({ id: id }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 };
 
@@ -29,12 +29,13 @@ const verifyJWT = async (token, next) => {
 
 exports.protect = async (token, next) => {
   try {
-    const decoded = verifyJWT(token); //decode the jwt key, if error, handled in error handler
+    const decoded = await verifyJWT(token); //decode the jwt key, if error, handled in error handler
 
     //check if user exists
+    if (!decoded) return next(new AppError("Your Password or email is Wrong"));
 
     const currentUser = await db.query(
-      `SELECT * FROM users WHERE id=${decoded}`
+      `SELECT * FROM users WHERE id=${decoded.id}`
     );
     if (!currentUser.data.length) {
       return next(
@@ -81,16 +82,11 @@ exports.checkCredentials = async (email, password, next) => {
     );
     //1) find the user
     if (!currentUser.data.length)
-      return next(
-        new AppError(
-          "The user belonging to this token does no longer exist.",
-          401
-        )
-      );
+      return next(new AppError("Your email or password is wrong.", 401));
 
     //2) check if the current password is correct
     if (!(await bcrypt.compare(password, currentUser.data[0].password))) {
-      return next(new AppError("Your current password is wrong.", 401));
+      return next(new AppError("Your email or password is wrong.", 401));
     }
 
     return currentUser.data[0];

@@ -1,7 +1,17 @@
 const express = require("express");
-const {getOwnProfile, getOneUser,getAllUsers,blacklist,changeDesignation,changeRole,deleteUser,awardPoints,addBio,bulkSignup} 
-    = require("../controller/userController");
-const {protect, restrictTo} = require("../controller/authController");
+const {
+  getOwnProfile,
+  getOneUser,
+  getAllUsers,
+  blacklist,
+  changeDesignation,
+  changeRole,
+  deleteUser,
+  awardPoints,
+  addBio,
+  bulkSignup,
+} = require("../controller/userController");
+const { protect, restrictTo } = require("../controller/authController");
 
 const router = express.Router();
 
@@ -12,56 +22,41 @@ const router = express.Router();
 //    restrictTo("superAdmin"),
 //    bulkSignup
 // );
+router.get("/allUsers", protect, getAllUsers);
 
 //GET OWN PROFILE
-router.get("/profile",  protect,   getOwnProfile);
+router.get("/profile", protect, getOwnProfile);
 
 //GET ONE USER
-router.get("/:id",  protect,   getOneUser);
+router.get("/:id", protect, getOneUser);
 
 //GET ALL USERS
-router.get("/allUsers",  protect,   getAllUsers);
 
 //BLACKLIST/WHITELIST
-router.patch(
-  "/:id/blacklist",
-   protect,
-   restrictTo("superAdmin"),
-    blacklist
-);
+router.patch("/:id/blacklist", protect, restrictTo("superAdmin"), blacklist);
 
 //CHANGE DESIGNATION
 router.patch(
   "/:id/changeDesignation",
-   protect,
-   restrictTo("superAdmin"),
-    changeDesignation
+  protect,
+  restrictTo("superAdmin"),
+  changeDesignation
 );
 
 //CHANGE ROLE
-router.patch(
-  "/:id/changeRole",
-   protect,
-   restrictTo("superAdmin"),
-    changeRole
-);
+router.patch("/:id/changeRole", protect, restrictTo("superAdmin"), changeRole);
 
 //REMOVE USER
-router.delete(
-  "/:id",
-   protect,
-   restrictTo("superAdmin"),
-    deleteUser
-);
+router.delete("/:id", protect, restrictTo("superAdmin"), deleteUser);
 
 router.patch(
   "/:id/awardPoints",
-   protect,
-   restrictTo("superAdmin", "admin"),
-    awardPoints
+  protect,
+  restrictTo("superAdmin", "admin"),
+  awardPoints
 );
 
 //CHANGE BIO
-router.patch("/me",  protect,   addBio);
+router.patch("/me", protect, addBio);
 
 module.exports = router;

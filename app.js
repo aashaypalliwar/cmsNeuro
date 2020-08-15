@@ -7,6 +7,7 @@ const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 
 const AppError = require("./utils/appError.js");
+const errorHandler = require("./utils/errorHandler");
 const { NODE_ENV } = require("./utils/config");
 
 const app = express();
@@ -18,7 +19,6 @@ const taskRouter = require("./routes/taskRouter");
 const authRouter = require("./routes/authRouter");
 const announcementRouter = require("./routes/announcementRouter");
 const leaderboardRouter = require("./routes/leaderboardRouter");
-
 
 app.use(cors());
 
@@ -60,5 +60,7 @@ if (NODE_ENV === "production") {
 app.all("*", (req, res, next) => {
   next(new AppError(`No url found found for ${req.url}`, 404));
 });
+
+app.use(errorHandler);
 
 module.exports = app;

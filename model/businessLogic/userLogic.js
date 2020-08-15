@@ -122,7 +122,7 @@ exports.fetchPointHistoryofUser = async (user_id, next) => {
 
 exports.fetchAllUsers = async (next) => {
   try {
-    const users = await db.query("SELECT id,name,email FROM users");
+    const users = await db.query("SELECT id, name, email FROM users");
     return users.data;
   } catch (err) {
     return next(new AppError("Error fetching users", 400));
