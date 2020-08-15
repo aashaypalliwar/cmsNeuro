@@ -116,7 +116,7 @@ module.exports.allotmentSchema = {
     timestamp INTEGER NOT NULL,
     points INTEGER NOT NULL,
     reason TEXT NOT NULL,
-    FOREIGN KEY(user_id) REFERENCES users(id)
+    FOREIGN KEY(user_id) REFERENCES users(id),
     FOREIGN KEY(awarded_by) REFERENCES users(id)
     `,
 };
