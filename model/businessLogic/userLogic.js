@@ -30,7 +30,7 @@ exports.blacklist = catchAsync(async (id) => {
 
   const updatedUser = await db.query(`SELECT * FROM users WHERE id=${id}`);
 
-  return updatedUser;
+  return updatedUser.data;
 });
 
 exports.changeDesignation = catchAsync(async (id, designation) => {
@@ -41,7 +41,7 @@ exports.changeDesignation = catchAsync(async (id, designation) => {
   );
   const updatedUser = await db.query(`SELECT * FROM users WHERE id=${id}`);
 
-  return updatedUser;
+  return updatedUser.data;
 });
 
 exports.changeRole = catchAsync(async (id, role) => {
@@ -50,49 +50,36 @@ exports.changeRole = catchAsync(async (id, role) => {
   await db.query(`UPDATE users SET role=${role} WHERE id=${user.data[0].id}`);
   const updatedUser = await db.query(`SELECT * FROM users WHERE id=${id}`);
 
-  return updatedUser;
+  return updatedUser.data;
 });
 
 exports.deleteUser = catchAsync(async (id) => {
   const user = await db.query(`SELECT * FROM users WHERE id=${id}`);
   if (!user.data.length) return user;
   await db.query(`DELETE FROM users WHERE id=${id}`);
-  return user;
+  return user.data;
 });
 
 exports.addBio = catchAsync(async (id, bio) => {
   const updatedUser = await db.query(
     `UPDATE users SET bio=${bio} WHERE id=${id}`
   );
-  return updatedUser;
+  return updatedUser.data;
 });
 
-exports.getOne = catchAsync(async (id) => {
+exports.fetchOneUser = catchAsync(async (id) => {
   const user = await db.query(`SELECT * FROM users WHERE id=${id}`);
-  return user;
+  return user.data;
 });
 
-exports.getLeaderBoard = catchAsync(async () => {
-  const users = await db.query(
-    `SELECT id,name,points,old_rank,current_rank FROM users WHERE tracking_point=1 ORDER BY points`
-  );
-
-  const userList = users.data;
-  let rank = 1,
-    count = 0,
-    previousPoints = userList[0].points;
-  for (let user in userList) {
-    count++;
-    user.old_rank = user.current_rank;
-    if (user.points === previousPoints) user.current_rank = rank;
-    else {
-      user.current_rank = count;
-      rank = count;
-    }
+exports.fetchAllUsers = async (next) => {
+  try {
+    const users = await db.query("SELECT id,name,email FROM users");
+    return users.data;
+  } catch (err) {
+    return next(new AppError("Error fetching users", 400));
   }
-
-  return userList;
-});
+};
 
 exports.awardPoints = catchAsync(async (data) => {
   const user = await db.query(`SELECT * FROM users WHERE id=${data.user_id}`);

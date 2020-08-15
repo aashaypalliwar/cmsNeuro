@@ -1,11 +1,10 @@
 const AppError = require("../utils/appError");
 
-// const handleDuplicateKeyDB = (err) => {
-//     const keys = err.split(" ")[4].split(".");//SQLITE_CONSTRAINT: UNIQUE constraint failed: drivers.phoneNumber
-//   const message = `Duplicate ${keys[0]}: ${keys[1]}. Use another value`;
-//   return new AppError(message, 400);
-
-// };
+const handleDuplicateKeyDB = (err) => {
+  const keys = err.split(" ")[4].split("."); //SQLITE_CONSTRAINT: UNIQUE constraint failed: table_name.column_name
+  const message = `Duplicate ${keys[0]}: ${keys[1]}. Use another value`;
+  return new AppError(message, 400);
+};
 
 const handleJWTError = () =>
   new AppError("Invalid token. Please log in again!", 401);
@@ -68,7 +67,8 @@ module.exports = (err, req, res, next) => {
   } else if (process.env.NODE_ENV === "production") {
     let error = { ...err };
     error.message = err.message;
-
+    if (error.message.split(":")[0] === "SQLITE_CONSTRAINT")
+      error = handleDuplicateKeyDB(error.message);
     if (error.name === "JsonWebTokenError") error = handleJWTError();
     if (error.name === "TokenExpiredError") error = handleJWTExpiredError();
 
