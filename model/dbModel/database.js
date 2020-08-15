@@ -9,8 +9,10 @@ class Database {
         console.error(err.message);
       } else {
         console.log("Connected to the SQLite database.");
-        for(let schema in schemas){
-          this.db.run(`CREATE TABLE IF NOT EXISTS ${schemas[schema].tableName} (${schemas[schema].tableSchema})`)
+        for (let schema in schemas) {
+          this.db.run(
+            `CREATE TABLE IF NOT EXISTS ${schemas[schema].tableName} (${schemas[schema].tableSchema})`
+          );
         }
       }
     });
@@ -20,7 +22,7 @@ class Database {
     var that = this;
     return new Promise(function (resolve, reject) {
       that.db.all(sqlQuery, params, function (error, rows) {
-        if (error) reject(error.message);
+        if (error) reject({ error: error.message });
         else resolve({ data: rows });
       });
     });

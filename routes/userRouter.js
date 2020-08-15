@@ -4,22 +4,7 @@ const authController = require("../controller/authController");
 
 const router = express.Router();
 
-//LOGIN
-router.post("/auth/login", authController.login);
-
-//  FORGOT PASSWORD
-router.post("/auth/forgotPassword", authController.forgotPassword);
-
-// RESET PASSWORD
-router.patch("/auth/resetPassword", authController.resetPassword);
-
-//UPDATE PASSWORD
-router.patch(
-  "/updatePassword",
-  authController.protect,
-  authController.updatePassword
-);
-
+// GET LEADERBOARD
 router.get("/currentleaderboard", userController.getLeaderBoard);
 
 //ADD USER(S) WITH ROLE AND DESIGNATION
@@ -31,15 +16,13 @@ router.post(
 );
 
 //GET OWN PROFILE
-router.get("/me", authController.protect, userController.getMe);
+router.get("/profile", authController.protect, userController.getOwnProfile);
 
 //GET ONE USER
-router.get(
-  "/:id",
-  authController.protect,
-  authController.restrictTo("superAdmin", "admin"),
-  userController.getOne
-);
+router.get("/:id", authController.protect, userController.getOneUser);
+
+//GET ALL USERS
+router.get("/allUsers", authController.protect, userController.getAllUsers);
 
 //BLACKLIST/WHITELIST
 router.patch(

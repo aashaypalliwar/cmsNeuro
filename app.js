@@ -10,6 +10,7 @@ const app = express();
 const userRouter = require("./routes/userRouter");
 const topicRouter = require("./routes/topicRouter");
 const taskRouter = require("./routes/taskRouter");
+const authRouter = require("./routes/authRouter");
 const announcementRouter = require("./routes/announcementRouter");
 
 app.use(cors());
@@ -26,9 +27,9 @@ app.use(express.json());
 app.use(cookieParser());
 
 //"/api/auth"
-
+app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
-app.use("/api/v1/board/topics",topicRouter);
+app.use("/api/v1/board/topics", topicRouter);
 app.use("/api/v1/board/announcements", announcementRouter);
 app.use("/api/v1/board/topics/:topic_id/tasks", taskRouter);
 

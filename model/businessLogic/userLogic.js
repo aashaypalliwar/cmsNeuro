@@ -30,7 +30,7 @@ exports.blacklist = catchAsync(async (id) => {
 
   const updatedUser = await db.query(`SELECT * FROM users WHERE id=${id}`);
 
-  return updatedUser;
+  return updatedUser.data;
 });
 
 exports.changeDesignation = catchAsync(async (id, designation) => {
@@ -41,7 +41,7 @@ exports.changeDesignation = catchAsync(async (id, designation) => {
   );
   const updatedUser = await db.query(`SELECT * FROM users WHERE id=${id}`);
 
-  return updatedUser;
+  return updatedUser.data;
 });
 
 exports.changeRole = catchAsync(async (id, role) => {
@@ -50,27 +50,36 @@ exports.changeRole = catchAsync(async (id, role) => {
   await db.query(`UPDATE users SET role=${role} WHERE id=${user.data[0].id}`);
   const updatedUser = await db.query(`SELECT * FROM users WHERE id=${id}`);
 
-  return updatedUser;
+  return updatedUser.data;
 });
 
 exports.deleteUser = catchAsync(async (id) => {
   const user = await db.query(`SELECT * FROM users WHERE id=${id}`);
   if (!user.data.length) return user;
   await db.query(`DELETE FROM users WHERE id=${id}`);
-  return user;
+  return user.data;
 });
 
 exports.addBio = catchAsync(async (id, bio) => {
   const updatedUser = await db.query(
     `UPDATE users SET bio=${bio} WHERE id=${id}`
   );
-  return updatedUser;
+  return updatedUser.data;
 });
 
-exports.getOne = catchAsync(async (id) => {
+exports.fetchOneUser = catchAsync(async (id) => {
   const user = await db.query(`SELECT * FROM users WHERE id=${id}`);
-  return user;
+  return user.data;
 });
+
+exports.fetchAllUsers = async (next) => {
+  try {
+    const users = await db.query("SELECT id,name,email FROM users");
+    return users.data;
+  } catch (err) {
+    return next(new AppError("Error fetching users", 400));
+  }
+};
 
 exports.getLeaderBoard = catchAsync(async () => {
   const users = await db.query(
