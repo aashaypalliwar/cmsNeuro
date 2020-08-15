@@ -89,6 +89,8 @@ module.exports.announcementSchema = {
     user_id INTEGER NOT NULL,
     body TEXT NOT NULL,
     timestamp INTEGER NOT NULL,
+    lastEdit  INTEGER,
+    isArchived INTEGER DEFAULT 0,
     FOREIGN KEY(user_id) REFERENCES users(id)`,
 };
 
