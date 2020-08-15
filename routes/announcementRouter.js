@@ -2,25 +2,33 @@ const express = require("express");
 const router = express.Router();
 const { protect, restrictTo } = require("./../controller/authController");
 
-const announcementController = require("./../controller/boardControllers/announcementController");
+const {getAllAnnouncements, createAnnouncement, archiveAnnouncement, updateAnnouncement} 
+      = require("./../controller/boardControllers/announcementController");
 
-router.use(protect);
+// router.use(protect);
 
 router
   .route("/")
   .post(
-    restrictTo("superAdmin", "admin"),
-    announcementController.createAnnouncement
+    //restrictTo('superAdmin','admin')
+    createAnnouncement
   )
-  .get(announcementController.getAllAnnouncements);
+  .get(getAllAnnouncements);
 
 router
-  .route("/:announcement_id/archive")
-  .delete(restrictTo("admin"), announcementController.archiveAnnouncement);
+    .route('/:announcement_id/archive')
+    .delete(
+//         authController.restrictTo('admin'),
+           archiveAnnouncement
+     )
 router
-  .route("/:announcement_id")
-  .get(announcementController.getOneAnnouncement)
+    .route('/:announcement_id')
+    .patch(
+        // authController.restrictTo('admin'), 
+          updateAnnouncement
+        )
 
-  .patch(restrictTo("admin"), announcementController.updateAnnouncement);
-
+// router
+//     .route("/:announcement_id")
+//     .get(  getOneAnnouncement)
 module.exports = router;

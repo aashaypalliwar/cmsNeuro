@@ -13,6 +13,7 @@ const db = require("../dbModel/database");
 
 //sign jwt
 exports.signToken = (id) => {
+  console.log(process.env.PORT);
   return jwt.sign({ id: id }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 };
 
@@ -60,8 +61,9 @@ exports.accessRestrict = catchAsync(async (id, roles) => {
   return true;
 });
 
-exports.checkCredentials = catchAsync(async (email, password) => {
-  const currentUser = await db.query(`SELECT FROM users WHERE id=${id}`);
+exports.checkCredentials = async (email, password) =>{
+  try {
+    const currentUser = await db.query(`SELECT * FROM users WHERE email='${email}'`);
   //1) find the user
   if (!currentUser.data.length)
     return next(
@@ -72,13 +74,15 @@ exports.checkCredentials = catchAsync(async (email, password) => {
     );
 
   //2) check if the current password is correct
-  if (!(await bcrypt.compare(currentPassword, currentUser.data[0].password))) {
+  if (!(await bcrypt.compare(password, currentUser.data[0].password))) {
     return next(new AppError("Your current password is wrong.", 401));
   }
 
   return currentUser.data[0];
-});
-
+  } catch (error) {
+    console.log(error);
+  }
+} 
 exports.updatePassword = catchAsync(
   async (id, currentPassword, newPassword) => {
     //1) find the user

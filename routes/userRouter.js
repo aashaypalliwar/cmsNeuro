@@ -1,66 +1,67 @@
 const express = require("express");
-const userController = require("../controller/userController");
-const authController = require("../controller/authController");
+const {getOwnProfile, getOneUser,getAllUsers,blacklist,changeDesignation,changeRole,deleteUser,awardPoints,addBio,bulkSignup} 
+    = require("../controller/userController");
+const {protect, restrictTo} = require("../controller/authController");
 
 const router = express.Router();
 
 //ADD USER(S) WITH ROLE AND DESIGNATION
-router.post(
-  "/newUser",
-  authController.protect,
-  authController.restrictTo("superAdmin"),
-  authController.bulkSignup
-);
+// router.post(
+//   "/newUser",
+//    protect,
+//    restrictTo("superAdmin"),
+//    bulkSignup
+// );
 
 //GET OWN PROFILE
-router.get("/profile", authController.protect, userController.getOwnProfile);
+router.get("/profile",  protect,   getOwnProfile);
 
 //GET ONE USER
-router.get("/:id", authController.protect, userController.getOneUser);
+router.get("/:id",  protect,   getOneUser);
 
 //GET ALL USERS
-router.get("/allUsers", authController.protect, userController.getAllUsers);
+router.get("/allUsers",  protect,   getAllUsers);
 
 //BLACKLIST/WHITELIST
 router.patch(
   "/:id/blacklist",
-  authController.protect,
-  authController.restrictTo("superAdmin"),
-  userController.blacklist
+   protect,
+   restrictTo("superAdmin"),
+    blacklist
 );
 
 //CHANGE DESIGNATION
 router.patch(
   "/:id/changeDesignation",
-  authController.protect,
-  authController.restrictTo("superAdmin"),
-  userController.changeDesignation
+   protect,
+   restrictTo("superAdmin"),
+    changeDesignation
 );
 
 //CHANGE ROLE
 router.patch(
   "/:id/changeRole",
-  authController.protect,
-  authController.restrictTo("superAdmin"),
-  userController.changeRole
+   protect,
+   restrictTo("superAdmin"),
+    changeRole
 );
 
 //REMOVE USER
 router.delete(
   "/:id",
-  authController.protect,
-  authController.restrictTo("superAdmin"),
-  userController.deleteUser
+   protect,
+   restrictTo("superAdmin"),
+    deleteUser
 );
 
 router.patch(
   "/:id/awardPoints",
-  authController.protect,
-  authController.restrictTo("superAdmin", "admin"),
-  userController.awardPoints
+   protect,
+   restrictTo("superAdmin", "admin"),
+    awardPoints
 );
 
 //CHANGE BIO
-router.patch("/me", authController.protect, userController.addBio);
+router.patch("/me",  protect,   addBio);
 
 module.exports = router;

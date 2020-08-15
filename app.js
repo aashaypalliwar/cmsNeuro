@@ -19,6 +19,7 @@ const authRouter = require("./routes/authRouter");
 const announcementRouter = require("./routes/announcementRouter");
 const leaderboardRouter = require("./routes/leaderboardRouter");
 
+
 app.use(cors());
 
 app.options("*", cors());
