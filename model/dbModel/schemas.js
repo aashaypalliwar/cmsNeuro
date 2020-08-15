@@ -23,8 +23,8 @@ module.exports.topicSchema = {
     heading TEXT NOT NULL,
     description TEXT,
     scope TEXT NOT NULL,
-    important BIT DEFAULT 0
-    archived BIT DEFAULT 0
+    important BIT DEFAULT 0,
+    archived BIT DEFAULT 0,
     archived_at TEXT`,
 };
 
@@ -39,10 +39,10 @@ module.exports.taskSchema = {
     user_id INTEGER NOT NULL,
     topic_id INTEGER NOT NULL,
     deadline TEXT NOT NULL,
+    archived BIT DEFAULT 0,
+    archived_at TEXT,
     FOREIGN KEY(user_id) REFERENCES users(id),
-    FOREIGN KEY(topic_id) REFERENCES topics(id)
-    archived BIT DEFAULT 0
-    archived_at TEXT`,
+    FOREIGN KEY(topic_id) REFERENCES topics(id)`,
 };
 
 module.exports.tagSchema = {
@@ -115,7 +115,7 @@ module.exports.allotmentSchema = {
     timestamp INTEGER NOT NULL,
     points INTEGER NOT NULL,
     reason TEXT NOT NULL,
-    FOREIGN KEY(user_id) REFERENCES users(id)
+    FOREIGN KEY(user_id) REFERENCES users(id),
     FOREIGN KEY(awarded_by) REFERENCES users(id)
     `,
 };
