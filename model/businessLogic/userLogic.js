@@ -67,10 +67,33 @@ exports.addBio = catchAsync(async (id, bio) => {
   return updatedUser.data;
 });
 
-exports.fetchOneUser = catchAsync(async (id) => {
-  const user = await db.query(`SELECT * FROM users WHERE id=${id}`);
-  return user.data;
-});
+exports.fetchOneUser = async (id, next) => {
+  try {
+    //find the user
+    const user = await db.query(`SELECT * FROM users WHERE id=${id}`);
+    if (!user.data.length)
+      return next(new AppError("No user found with this id", 404));
+    let userData = user.data[0];
+
+    //find the point allotment to users,
+    //check if we are alloting points to the user
+    // if yes then find the allotments, if there are allotments push them to array, if not null
+    // assign to user object
+
+    if (userData.tracking_points) {
+      const points = await db.query(`SELECT * allotments WHERE user_id=${id}`);
+      if (points.data.length) {
+        const allotedPoints = [];
+        points.data.map((point) => allotedPoints.push(point));
+        userData.allotments = allotedPoints;
+      } else userData.allotments = null;
+    }
+    return userData;
+  } catch (err) {
+    console.error(err);
+    return next(new AppError("Something went wrong", 500));
+  }
+};
 
 exports.fetchAllUsers = async (next) => {
   try {
@@ -81,42 +104,31 @@ exports.fetchAllUsers = async (next) => {
   }
 };
 
-exports.getLeaderBoard = catchAsync(async () => {
-  const users = await db.query(
-    `SELECT id,name,points,old_rank,current_rank FROM users WHERE tracking_point=1 ORDER BY points`
-  );
+exports.awardPoints = async (data, next) => {
+  try {
+    const user = await db.query(`SELECT * FROM users WHERE id=${data.user_id}`);
 
-  const userList = users.data;
-  let rank = 1,
-    count = 0,
-    previousPoints = userList[0].points;
-  for (let user in userList) {
-    count++;
-    user.old_rank = user.current_rank;
-    if (user.points === previousPoints) user.current_rank = rank;
-    else {
-      user.current_rank = count;
-      rank = count;
-    }
+    if (!user.data.length)
+      return next(new AppError("No user found with this id", 404));
+
+    const points = user.data[0].points;
+    const newPoints = points + data.points;
+    await db.query(
+      `UPDATE users SET points=${newPoints} WHERE id=${data.user_id}`
+    );
+    const queryParams = [
+      data.user_id,
+      data.awarded_by,
+      data.points,
+      data.reason,
+      data.tmestamp,
+    ];
+    await db.query(
+      `INSERT INTO users (user_id, awarded_by, points, reason , timestamp) VALUES (?,?,?,?,?)`,
+      queryParams
+    );
+  } catch (err) {
+    console.log(err);
+    return next(new AppError("Something went wrong", 500));
   }
-
-  return userList;
-});
-
-exports.awardPoints = catchAsync(async (data) => {
-  const user = await db.query(`SELECT * FROM users WHERE id=${data.user_id}`);
-
-  if (!user.data.length)
-    return next(new AppError("No user found with this id", 404));
-
-  const points = user.data[0].points;
-  const newPoints = points + data.points;
-  await db.query(
-    `UPDATE users SET points=${newPoints} WHERE id=${data.user_id}`
-  );
-  const queryParams = [data.user_id, data.points, data.reason, data.tmestamp];
-  await db.query(
-    `INSERT INTO users (user_id, points, reason , timestamp) VALUES (?,?,?,?)`,
-    queryParams
-  );
-});
+};

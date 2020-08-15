@@ -17,6 +17,7 @@ const topicRouter = require("./routes/topicRouter");
 const taskRouter = require("./routes/taskRouter");
 const authRouter = require("./routes/authRouter");
 const announcementRouter = require("./routes/announcementRouter");
+const leaderboardRouter = require("./routes/leaderboardRouter");
 
 app.use(cors());
 
@@ -40,6 +41,7 @@ if (NODE_ENV !== "production") {
 //"/api/auth"
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/board/leaderboard", leaderboardRouter);
 app.use("/api/v1/board/topics", topicRouter);
 app.use("/api/v1/board/announcements", announcementRouter);
 app.use("/api/v1/board/topics/:topic_id/tasks", taskRouter);

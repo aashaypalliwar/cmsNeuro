@@ -4,9 +4,6 @@ const authController = require("../controller/authController");
 
 const router = express.Router();
 
-// GET LEADERBOARD
-router.get("/currentleaderboard", userController.getLeaderBoard);
-
 //ADD USER(S) WITH ROLE AND DESIGNATION
 router.post(
   "/newUser",

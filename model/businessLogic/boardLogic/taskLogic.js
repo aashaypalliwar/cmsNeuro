@@ -45,20 +45,25 @@ exports.checkScope = catchAsync(async (userRole, user_id, topic_id) => {
 
 //CRU Operations Tasks//
 
-exports.getOne = catchAsync(async (id) => {
-  let task = await db.query(`SELECT * FROM users WHERE id=${id}`);
-  if (!task.data.length) return next(new AppError("Task not found", 404));
+exports.fetchTask = async (id, next) => {
+  try {
+    const task = await db.query(`SELECT * FROM users WHERE id=${id}`);
+    if (!task.data.length) return next(new AppError("Task not found", 404));
+    let taskData = task.data[0];
+    //find tags
+    const tags = await db.query(`SELECT tag FROM tags WHERE task_id=${id}`);
+    if (tags.data.length) {
+      const tagNames = [];
+      tags.data.map((tag) => tagNames.push(tag.tag));
+      taskData.tags = tagNames;
+    } else taskData.tags = null;
 
-  //find tags
-  const tags = await db.query(`SELECT tag FROM tags WHERE task_id=${id}`);
-  if (tags.data.length) {
-    const tagNames = [];
-    tags.data.map((tag) => tagNames.push(tag.tag));
-    task.data[0].tags = tagNames;
+    return taskData;
+  } catch (err) {
+    console.log(err);
+    return next(new AppError("Something went wrong", 500));
   }
-
-  return task.data[0];
-});
+};
 
 exports.getAll = catchAsync(async (topic_id, filters) => {
   //if any other filters are required

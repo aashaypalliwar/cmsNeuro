@@ -5,10 +5,10 @@ const authController = require("./../controller/authController");
 const taskController = require("./../controller/boardControllers/taskController");
 
 //make sure that user is logged in
-// router.use(authController.protect);
+router.use(authController.protect);
 
 //check the scope of the topic and userRole and restrict or allow the access
-// router.use(taskController.accessScope);
+router.use(taskController.accessScope);
 
 //get and create Tasks
 router
