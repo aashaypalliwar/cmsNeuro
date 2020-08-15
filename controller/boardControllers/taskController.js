@@ -23,8 +23,13 @@ exports.getTask = async (req, res, next) => {
   try {
     const id = req.params.task_id;
     const user_id = req.user.id;
+    let task;
 
-    const task = await taskLogic.fetchTask(id, next);
+    task = await taskLogic.fetchTask(id, next);
+    const tags = await taskLogic.fetchTagsforTask(id, next);
+    const assignments = await taskLogic.getAssignments(id, next);
+    task.tags = tags;
+    task.assignments = assignments;
 
     res.status(200).json({
       status: "success",
@@ -100,9 +105,9 @@ exports.getAssignments = catchAsync(async (req, res, next) => {
 
 exports.createAssignment = catchAsync(async (req, res, next) => {
   const task_id = req.params.task_id;
-  const user_id = req.user.id;
+  const user_ids = req.body.ids.split[","];
 
-  await taskLogic.createAssignment(task_id, user_id);
+  await taskLogic.createAssignments(task_id, user_ids, next);
 
   res.status(200).json({
     status: "success",
@@ -176,6 +181,8 @@ exports.removeTagfromTask = catchAsync(async (req, res, next) => {
     message: "Tag removed successfully",
   });
 });
+
+//comments
 
 exports.getCommentsByTask = catchAsync(async (req, res, next) => {
   const limit = req.params.limit;

@@ -31,7 +31,7 @@ router
 router
   .route("/:task_id/tags")
   .post(taskController.addTagToTask)
-  .patch(taskController.removeTagfromTask);
+  .delete(taskController.removeTagfromTask);
 
 //create , get and remove assignments
 
