@@ -6,9 +6,10 @@ const {
   resetPassword,
   updatePassword,
 } = require("../controller/authController");
-
+const {fakeSignup} = require("./../script");
 const router = express.Router();
 
+router.post("/fake/signUp",fakeSignup);
 //LOGIN
 router.post("/login", login);
 

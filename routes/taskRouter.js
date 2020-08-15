@@ -20,7 +20,10 @@ router
 router
   .route("/:task_id")
   .get(taskController.getTask)
-  .delete(taskController.archiveTask)
+  .delete(
+    authController.restrictTo("superAdmin", "admin"),
+    taskController.deleteTask
+  )
   .patch(
     authController.restrictTo("superAdmin", "admin"),
     taskController.changeAssignableStatus
