@@ -4,7 +4,7 @@ const catchAsync = require("../utils/catchAsync");
 
 const {
   updateLeaderboard,
-} = require("../model/businessLogic/boardLogic/leaderboardLogicc");
+} = require("../model/businessLogic/boardLogic/leaderboardLogic");
 
 exports.blacklist = catchAsync(async (req, res, next) => {
   const id = req.params.id;
