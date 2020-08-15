@@ -137,6 +137,19 @@ exports.updateOne = catchAsync(async (id, newData) => {
   return updatedTask.data;
 });
 
+exports.deleteTask = async (task_id, next) => {
+  try {
+    //delete the task
+    await db.query(`DELETE FROM tasks WHERE id = ${task_id}`);
+    //delete the tags
+    await db.query(`DELETE FROM tags WHERE task_id = ${task_id}`);
+    //delete the assignemts
+    await db.query(`DELETE FROM assignemts WHERE task_id=${task_id}`);
+  } catch (err) {
+    return next(new AppError("Something went wrong", 500));
+  }
+};
+
 //Archive Task
 
 exports.archiveOne = catchAsync(async (task_id) => {

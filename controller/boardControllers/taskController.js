@@ -78,6 +78,21 @@ exports.archiveTask = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.deleteTask = async (req, res, next) => {
+  try {
+    const task_id = req.params.task_id;
+
+    await taskLogic.deleteTask(task_id, next);
+
+    res.status(200).json({
+      status: "success",
+      message: "Task deleted Successfully",
+    });
+  } catch (err) {
+    return next(new AppError("Something went wrong", 500));
+  }
+};
+
 //status
 exports.changeAssignableStatus = catchAsync(async (req, res, next) => {
   const task_id = req.params.task_id;
