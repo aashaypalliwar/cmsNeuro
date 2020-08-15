@@ -85,15 +85,6 @@ exports.getOne = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getLeaderBoard = catchAsync(async (req, res, next) => {
-  const board = await userLogic.getLeaderBoard();
-
-  res.status(200).json({
-    status: "success",
-    board,
-  });
-});
-
 exports.awardPoints = catchAsync(async (req, res, next) => {
   const pointData = {
     user_id: req.body.id,

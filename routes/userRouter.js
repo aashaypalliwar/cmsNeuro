@@ -20,8 +20,6 @@ router.patch(
   authController.updatePassword
 );
 
-router.get("/currentleaderboard", userController.getLeaderBoard);
-
 //ADD USER(S) WITH ROLE AND DESIGNATION
 router.post(
   "/newUser",

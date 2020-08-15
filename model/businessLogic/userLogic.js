@@ -72,28 +72,6 @@ exports.getOne = catchAsync(async (id) => {
   return user;
 });
 
-exports.getLeaderBoard = catchAsync(async () => {
-  const users = await db.query(
-    `SELECT id,name,points,old_rank,current_rank FROM users WHERE tracking_point=1 ORDER BY points`
-  );
-
-  const userList = users.data;
-  let rank = 1,
-    count = 0,
-    previousPoints = userList[0].points;
-  for (let user in userList) {
-    count++;
-    user.old_rank = user.current_rank;
-    if (user.points === previousPoints) user.current_rank = rank;
-    else {
-      user.current_rank = count;
-      rank = count;
-    }
-  }
-
-  return userList;
-});
-
 exports.awardPoints = catchAsync(async (data) => {
   const user = await db.query(`SELECT * FROM users WHERE id=${data.user_id}`);
 
