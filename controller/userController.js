@@ -2,6 +2,10 @@ const userLogic = require("../model/businessLogic/userLogic");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 
+const {
+  updateLeaderboard,
+} = require("../model/businessLogic/boardLogic/leaderboardLogicc");
+
 exports.blacklist = catchAsync(async (req, res, next) => {
   const id = req.params.id;
   const updatedUser = await userLogic.blacklist(id);
@@ -74,16 +78,21 @@ exports.getOwnProfile = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getOneUser = catchAsync(async (req, res, next) => {
-  const id = req.params.id;
-  const user = await userLogic.fetchOneUser(id);
-  if (!user.length)
-    return next(new AppError("No user found with this id", 404));
-  res.status(200).json({
-    user,
-    status: "success",
-  });
-});
+exports.getOneUser = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const user = await userLogic.fetchOneUser(id, next);
+    if (!user.length)
+      return next(new AppError("No user found with this id", 404));
+    res.status(200).json({
+      user,
+      status: "success",
+    });
+  } catch (err) {
+    console.log(err);
+    return next(new AppError("Something went wrong", 500));
+  }
+};
 
 exports.getAllUsers = async (req, res, next) => {
   try {
@@ -97,18 +106,24 @@ exports.getAllUsers = async (req, res, next) => {
   }
 };
 
-exports.awardPoints = catchAsync(async (req, res, next) => {
-  const pointData = {
-    user_id: req.body.id,
-    reason: req.body.reason,
-    points: req.body.points,
-    timestamp: Date.now(),
-  };
+exports.awardPoints = async (req, res, next) => {
+  try {
+    const pointData = {
+      user_id: req.body.id,
+      awarded_by: req.user.id,
+      reason: req.body.reason,
+      points: req.body.points,
+      timestamp: Date.now(),
+    };
 
-  await userLogic.awardPoints(pointData);
+    await userLogic.awardPoints(pointData, next);
+    await updateLeaderboard(next);
 
-  res.status(200).json({
-    status: "success",
-    message: "points awarded successfully",
-  });
-});
+    res.status(200).json({
+      status: "success",
+      message: "points awarded  and leaderBoard updated successfully",
+    });
+  } catch (err) {
+    return next(new AppError("Something went wrong", 500));
+  }
+};

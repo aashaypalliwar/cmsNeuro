@@ -1,5 +1,6 @@
 const {
   fetchLeaderBoard,
+  updateLeaderboard,
 } = require("./../../model/businessLogic/boardLogic/leaderboardLogic");
 
 exports.getLeaderBoard = async (req, res, next) => {
@@ -17,11 +18,11 @@ exports.getLeaderBoard = async (req, res, next) => {
 
 exports.refreshLeaderBoard = async (req, res, next) => {
   try {
-    const board = await fetchLeaderBoard(next);
+    await updateLeaderboard(next);
 
     res.status(200).json({
       status: "success",
-      board,
+      message: "leaderboard updated successfully",
     });
   } catch (err) {
     return next(new AppError("Something Went wrong", 500));
