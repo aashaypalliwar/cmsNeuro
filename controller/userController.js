@@ -72,6 +72,7 @@ exports.addBio = catchAsync(async (req, res, next) => {
 exports.getOwnProfile = catchAsync(async (req, res, next) => {
   const id = req.user.id;
   const user = await userLogic.fetchOneUser(id);
+
   res.status(200).json({
     user,
     status: "success",
@@ -81,9 +82,14 @@ exports.getOwnProfile = catchAsync(async (req, res, next) => {
 exports.getOneUser = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const user = await userLogic.fetchOneUser(id, next);
+    let user = await userLogic.fetchOneUser(id, next);
     if (!user.length)
       return next(new AppError("No user found with this id", 404));
+
+    if (user.tracking_points) {
+      const pointHistory = await userLogic.fetchPointHistoryofUser(id, next);
+      user.allotments = pointHistory;
+    }
     res.status(200).json({
       user,
       status: "success",

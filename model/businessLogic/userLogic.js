@@ -73,24 +73,30 @@ exports.fetchOneUser = async (id, next) => {
     const user = await db.query(`SELECT * FROM users WHERE id=${id}`);
     if (!user.data.length)
       return next(new AppError("No user found with this id", 404));
-    let userData = user.data[0];
+    const userData = user.data[0];
 
-    //find the point allotment to users,
-    //check if we are alloting points to the user
-    // if yes then find the allotments, if there are allotments push them to array, if not null
-    // assign to user object
-
-    if (userData.tracking_points) {
-      const points = await db.query(`SELECT * allotments WHERE user_id=${id}`);
-      if (points.data.length) {
-        const allotedPoints = [];
-        points.data.map((point) => allotedPoints.push(point));
-        userData.allotments = allotedPoints;
-      } else userData.allotments = null;
-    }
     return userData;
   } catch (err) {
     console.error(err);
+    return next(new AppError("Something went wrong", 500));
+  }
+};
+
+exports.fetchPointHistoryofUser = async (user_id, next) => {
+  //find the point allotment to users,
+  //check if we are alloting points to the user
+  // if yes then find the allotments, if there are allotments push them to array, if not null
+  // assign to user object
+  try {
+    const points = await db.query(
+      `SELECT * allotments WHERE user_id=${user_id}`
+    );
+    if (points.data.length) {
+      const allotedPoints = [];
+      points.data.map((point) => allotedPoints.push(point));
+      return allotedPoints;
+    } else return null;
+  } catch (err) {
     return next(new AppError("Something went wrong", 500));
   }
 };

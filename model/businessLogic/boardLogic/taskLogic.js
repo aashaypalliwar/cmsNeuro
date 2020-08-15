@@ -49,21 +49,28 @@ exports.fetchTask = async (id, next) => {
   try {
     const task = await db.query(`SELECT * FROM users WHERE id=${id}`);
     if (!task.data.length) return next(new AppError("Task not found", 404));
-    let taskData = task.data[0];
-    //find tags
-    const tags = await db.query(`SELECT tag FROM tags WHERE task_id=${id}`);
-    if (tags.data.length) {
-      const tagNames = [];
-      tags.data.map((tag) => tagNames.push(tag.tag));
-      taskData.tags = tagNames;
-    } else taskData.tags = null;
 
-    return taskData;
+    return task.data[0];
   } catch (err) {
     console.log(err);
     return next(new AppError("Something went wrong", 500));
   }
 };
+
+// exports.fetchassignmentsforTask = async (id, next) => {
+//   try {
+//     const assignments = await db.query(
+//       `SELECT * FROM assignments WHERE task_id=${id}`
+//     );
+//     if (assignments.data.length) {
+//       const assignmentNames = [];
+//       assignments.data.map((assignment) => assignmentNames.push(assignment));
+//       return assignmentNames;
+//     } else return null;
+//   } catch (err) {
+//     return next(new AppError("Something went wrong", 500));
+//   }
+// };
 
 exports.getAll = catchAsync(async (topic_id, filters) => {
   //if any other filters are required
@@ -115,8 +122,6 @@ exports.createOne = catchAsync(async (task) => {
     `INSERT INTO tasks (heading, description,scope, user_id, topic_id,deadline) VALUES (?,?,?,?,?,?)`,
     queryParams
   );
-
-  // const newTask = await db.query(`SELECT * FR`)
 });
 
 //update will receive updatedata as object
@@ -161,29 +166,44 @@ exports.toggle = catchAsync(async (task_id) => {
 
 //assignments//
 
-exports.getAssignments = catchAsync(async (task_id) => {
-  const assignments = await db.query(
-    `SELECT * FROM assignments WHERE task_id = ${task_id}`
-  );
-  if (!assignments.data.length) return null;
+exports.getAssignments = async (task_id, next) => {
+  try {
+    const assignments = await db.query(
+      `SELECT * FROM assignments WHERE task_id = ${task_id}`
+    );
+    if (!assignments.data.length) return null;
 
-  return assignments.data;
-});
+    return assignments.data;
+  } catch (err) {
+    return next(new AppError("Something went wrong", 500));
+  }
+};
 
-exports.createAssignment = catchAsync(async (task_id, user_id) => {
-  const task = await db.query(`SELECT * FROM tasks WHERE id = ${task_id}`);
-  const user = await db.query(`SELECT * FROM users WHERE id=${user_id}`);
+exports.createAssignments = async (task_id, user_ids, next) => {
+  try {
+    //find task
+    const task = await db.query(`SELECT * FROM tasks WHERE id = ${task_id}`);
+    if (!task.data.length)
+      return next(new AppError("Task does not exist", 404));
 
-  if (!user.data.length || task.data.length)
-    return next(new AppError("The user or Task doesnot exist", 404));
+    for (let user_id in user_ids) {
+      const user = await db.query(`SELECT * FROM users WHERE id=${user_id}`);
 
-  const queryParams = [task_id, user_id, Date.now()];
+      if (!user.data.length)
+        return next(new AppError("the user or task does not exist", 404));
 
-  await db.query(
-    `INSERT INTO assignments (task_id, user_id,timestamp) VALUES (?,?,?)`,
-    queryParams
-  );
-});
+      const queryParams = [task_id, user_id, Date.now()];
+
+      await db.query(
+        `INSERT INTO assignments (task_id, user_id,timestamp) VALUES (?,?,?)`,
+        queryParams
+      );
+    }
+  } catch (err) {
+    console.log(err);
+    return next(new AppError("Something went wrong", 500));
+  }
+};
 
 exports.removeAssignment = catchAsync(async (assignment_id) => {
   await db.query(`DELETE FROM assignments WHERE id=${assignment_id}`);
@@ -245,6 +265,21 @@ exports.acceptRequest = catchAsync(async (request_id) => {
 });
 
 //tags///
+
+exports.fetchTags = async (task_id, next) => {
+  try {
+    const tags = await db.query(
+      `SELECT tag FROM tags WHERE task_id=${task_id}`
+    );
+    if (tags.data.length) {
+      const tagNames = [];
+      tags.data.map((tag) => tagNames.push(tag.tag));
+      return tagNames;
+    } else return null;
+  } catch (err) {
+    return next(new AppError("Something went wrong", 500));
+  }
+};
 
 exports.addTag = catchAsync(async (task_id, tagName) => {
   const task = await db.query(`SELECT * FROM tasks WHERE id= ${task_id}`);
