@@ -10,7 +10,7 @@ module.exports.setupSocket = (server) => {
   io.use((socket, next) => {
     if (socket.handshake.query && socket.handshake.query.token) {
       jwt.verify(socket.handshake.query.token, JWT_SECRET, (err, decoded) => {
-        if (err) return next(new AppError("Authentication error", 400));
+        if (err) throw new AppError("Authentication error", 400);
         socket.decoded = decoded;
         next();
       });

@@ -18,9 +18,9 @@ exports.getAllAnnouncements = async (req, res, next) => {
         announcements,
       },
     });
-  } catch (error) {
-    console.log(error);
-    return next(new AppError("Something went wrong", 400));
+  } catch (err) {
+    console.log(err);
+    return next(err);
   }
 };
 
@@ -39,9 +39,9 @@ exports.createAnnouncement = async (req, res, next) => {
       status: "success",
       newAnnouncement,
     });
-  } catch (error) {
-    console.log(error);
-    return next(new AppError("Something went wrong", 400));
+  } catch (err) {
+    console.log(err);
+    return next(err);
   }
 };
 
@@ -61,9 +61,9 @@ exports.updateAnnouncement = async (req, res, next) => {
       status: "Success",
       updatedAnnouncement,
     });
-  } catch (error) {
-    console.log(error);
-    return next(new AppError("Something went wrong", 400));
+  } catch (err) {
+    console.log(err);
+    return next(err);
   }
 };
 
@@ -76,9 +76,9 @@ exports.archiveAnnouncement = async (req, res, next) => {
       status: "Success",
       message: "Archived successfully",
     });
-  } catch (error) {
-    console.log(error);
-    return next(new AppError("Something went wrong", 400));
+  } catch (err) {
+    console.log(err);
+    return next(err);
   }
 };
 
@@ -92,8 +92,8 @@ exports.archiveAnnouncement = async (req, res, next) => {
 //         "status" : "success",
 //         announcement
 //     })
-//     } catch (error) {
-//         console.log(error);
+//     } catch (err) {
+//         console.log(err);
 //         return next(new AppError('Something went wrong',400))
 //     }
 // }

@@ -1,4 +1,12 @@
-const authLogic = require("../model/businessLogic/authLogic");
+const {
+  signToken,
+  protect,
+  accessRestrict,
+  checkCredentials,
+  updatePassword,
+  resetPassword,
+  forgotPassword,
+} = require("../model/businessLogic/authLogic");
 
 //utils
 const AppError = require("../utils/appError");
@@ -8,7 +16,7 @@ const AppError = require("../utils/appError");
 const createSendToken = async (user, statusCode, res) => {
   try {
     // console.log(user);
-    const token = authLogic.signToken(user.id);
+    const token = signToken(user.id);
     res.status(statusCode).json({
       status: "success",
       token,
@@ -35,7 +43,7 @@ exports.protect = async (req, res, next) => {
     if (!token) {
       return next(new AppError("You are not logged in", 401));
     }
-    req.user = await authLogic.protect(token, next);
+    req.user = await protect(token, next);
     next();
   } catch (err) {
     return next(err);
@@ -44,7 +52,7 @@ exports.protect = async (req, res, next) => {
 exports.restrictTo = (...roles) => {
   return async (req, res, next) => {
     const id = req.user.id;
-    const check = await authLogic.accessRestrict(id, roles, next);
+    const check = await accessRestrict(id, roles, next);
     console.log(check);
     if (!check)
       return next(
@@ -64,7 +72,7 @@ exports.login = async (req, res, next) => {
       return next(new AppError("Please provide email and password!", 400));
     }
     // 2) Check if user exists && password is correct
-    const user = await authLogic.checkCredentials(email, password, next);
+    const user = await checkCredentials(email, password, next);
 
     // 3) If everything ok, send token to client
     createSendToken(user, 200, res);
@@ -82,12 +90,7 @@ exports.updatePassword = async (req, res, next) => {
       newPassword: req.body.newPassword,
     };
     // if (true) return next(new AppError("Test went Wrong", 500));
-    await authLogic.updatePassword(
-      data.id,
-      data.currentPassword,
-      data.newPassword,
-      next
-    );
+    await updatePassword(data.id, data.currentPassword, data.newPassword, next);
 
     createSendToken(req.user, 200, res);
   } catch (err) {
@@ -101,7 +104,7 @@ exports.forgotPassword = async (req, res, next) => {
     const email = req.body.email;
 
     //send mail to the user
-    await authLogic.forgotPassword(email, next);
+    await forgotPassword(email, next);
 
     res.status(200).json({
       status: "success",
@@ -117,7 +120,7 @@ exports.resetPassword = async (req, res, next) => {
     //take token and newPassword as input
     const { token, newPassword } = req.body;
 
-    const user = await authLogic.resetPassword(token, newPassword, next);
+    const user = await resetPassword(token, newPassword, next);
 
     createSendToken(user, 200, res);
   } catch (err) {

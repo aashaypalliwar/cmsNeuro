@@ -43,7 +43,7 @@ exports.checkScope = async (userRole, user_id, topic_id, next) => {
       return false;
     }
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
@@ -52,12 +52,12 @@ exports.checkScope = async (userRole, user_id, topic_id, next) => {
 exports.fetchTask = async (id, next) => {
   try {
     const task = await db.query(`SELECT * FROM users WHERE id=${id}`);
-    if (!task.data.length) return next(new AppError("Task not found", 404));
+    if (!task.data.length) throw new AppError("Task not found", 404);
 
     return task.data[0];
   } catch (err) {
     console.log(err);
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
@@ -92,7 +92,7 @@ exports.getAllTasks = async (topic_id, next) => {
 
     return tasks.data;
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
@@ -116,7 +116,7 @@ exports.createATask = async (task, next) => {
       queryParams
     );
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
@@ -142,7 +142,7 @@ exports.deleteTask = async (task_id, next) => {
     //delete the assignemts
     await db.query(`DELETE FROM assignemts WHERE task_id=${task_id}`);
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
@@ -153,14 +153,14 @@ exports.archiveOneTask = async (task_id, next) => {
     const task = await db.query(`SELECT * FROM tasks WHERE id = ${task_id}`);
 
     if (!task.data.length)
-      return next(new AppError("No task found with this id", 404));
+      throw new AppError("No task found with this id", 404);
 
     //Send the comments to the superAdmins and Admins
     // to be implemented after comments setup
 
     await db.query(`DELETE FROM tasks WHERE id = ${task_id}`);
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
@@ -169,7 +169,7 @@ exports.toggle = async (task_id, next) => {
   try {
     const task = await db.query(`SELECT * FROM tasks WHERE id = ${task_id}`);
 
-    if (!task.data.length) return next(new AppError("No task exists", 404));
+    if (!task.data.length) throw new AppError("No task exists", 404);
 
     const toggle = task.data[0].assignable ? 0 : 1;
 
@@ -177,7 +177,7 @@ exports.toggle = async (task_id, next) => {
       `UPDATE tasks SET assignable ='${toggle}' WHERE id = ${task + id}`
     );
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
@@ -192,7 +192,7 @@ exports.getAssignments = async (task_id, next) => {
 
     return assignments.data;
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
@@ -200,14 +200,13 @@ exports.createAssignments = async (task_id, user_ids, next) => {
   try {
     //find task
     const task = await db.query(`SELECT * FROM tasks WHERE id = ${task_id}`);
-    if (!task.data.length)
-      return next(new AppError("Task does not exist", 404));
+    if (!task.data.length) throw new AppError("Task does not exist", 404);
 
     for (let user_id in user_ids) {
       const user = await db.query(`SELECT * FROM users WHERE id=${user_id}`);
 
       if (!user.data.length)
-        return next(new AppError("the user or task does not exist", 404));
+        throw new AppError("the user or task does not exist", 404);
 
       const queryParams = [task_id, user_id, Date.now()];
 
@@ -218,7 +217,7 @@ exports.createAssignments = async (task_id, user_ids, next) => {
     }
   } catch (err) {
     console.log(err);
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
@@ -226,7 +225,7 @@ exports.removeAssignment = async (assignment_id, next) => {
   try {
     await db.query(`DELETE FROM assignments WHERE id=${assignment_id}`);
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
@@ -245,7 +244,7 @@ exports.getAssignmentRequests = async (task_id, next) => {
 
     return assignmentsRequests.data;
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
@@ -257,9 +256,7 @@ exports.requestAssignment = async (user_id, task_id, next) => {
     );
 
     if (!task.data.length)
-      return next(
-        new AppError("Task does not exist or is not assignable", 404)
-      );
+      throw new AppError("Task does not exist or is not assignable", 404);
 
     const queryParams = [task_id, user_id, Date.now()];
     await db.query(
@@ -267,7 +264,7 @@ exports.requestAssignment = async (user_id, task_id, next) => {
       queryParams
     );
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
@@ -280,7 +277,7 @@ exports.acceptRequest = async (request_id, next) => {
     );
 
     if (!request.data.length)
-      return next(new AppError("No request with the id exists", 404));
+      throw new AppError("No request with the id exists", 404);
 
     const requestData = request.data[0];
     const queryParams = [requestData.task_id, requestData.user_id, Date.now()];
@@ -295,7 +292,7 @@ exports.acceptRequest = async (request_id, next) => {
       `UPDATE assignmentRequests SET accepted=1 WHERE id=${request.id}`
     );
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
@@ -312,7 +309,7 @@ exports.fetchTags = async (task_id, next) => {
       return tagNames;
     } else return null;
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
@@ -320,8 +317,7 @@ exports.addTag = async (task_id, tagName, next) => {
   try {
     const task = await db.query(`SELECT * FROM tasks WHERE id= ${task_id}`);
 
-    if (!task.data.length)
-      return next(new AppError("Task does not exist", 404));
+    if (!task.data.length) throw new AppError("Task does not exist", 404);
 
     const queryParams = [task_id, tagName, Date.now()];
     await db.query(
@@ -329,7 +325,7 @@ exports.addTag = async (task_id, tagName, next) => {
       queryParams
     );
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
@@ -337,11 +333,11 @@ exports.removeTag = async (tag_id, next) => {
   try {
     const tag = await db.query(`SELECT * FROM tags WHERE id = ${tag_id}`);
 
-    if (!tag.data.length) return next(new AppError("Tag does not exist", 404));
+    if (!tag.data.length) throw new AppError("Tag does not exist", 404);
 
     await db.query(`DELETE FROM tags WHERE id = ${tag_id}`);
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
@@ -355,6 +351,6 @@ exports.getComments = async (id, limit, offset) => {
     );
     return comments;
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
