@@ -8,20 +8,18 @@ const {
   changeRole,
   deleteUser,
   awardPoints,
-  addBio
+  addBio,
+  bulkSignup,
 } = require("../controller/userController");
 const { protect, restrictTo } = require("../controller/authController");
 
 const router = express.Router();
 
 //ADD USER(S) WITH ROLE AND DESIGNATION
-// router.post(
-//   "/newUser",
-//    protect,
-//    restrictTo("superAdmin"),
-//    bulkSignup
-// );
-router.get("/allUsers", protect, getAllUsers);
+router.post("/addUsers", protect, restrictTo("superAdmin"), bulkSignup);
+
+//Get All Users
+router.get("/allUsers", protect, restrictTo("superAdmin"), getAllUsers);
 
 //GET OWN PROFILE
 router.get("/profile", protect, getOwnProfile);

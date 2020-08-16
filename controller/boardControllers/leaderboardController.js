@@ -12,7 +12,7 @@ exports.getLeaderBoard = async (req, res, next) => {
       board,
     });
   } catch (err) {
-    return next(new AppError("Something Went wrong", 500));
+    return next(err);
   }
 };
 
@@ -25,6 +25,6 @@ exports.refreshLeaderBoard = async (req, res, next) => {
       message: "leaderboard updated successfully",
     });
   } catch (err) {
-    return next(new AppError("Something Went wrong", 500));
+    return next(err);
   }
 };

@@ -1,16 +1,19 @@
 const AppError = require("../../utils/appError");
 const db = require("../dbModel/database");
 const sendEmail = require("../../utils/sendEmail");
-
+const bcrypt = require("bcryptjs");
 exports.blacklist = async (id, next) => {
   try {
-    const user = await db.query(`SELECT * FROM users WHERE id=${id}`);
-    if (!user.data.length) return user;
+    const user = await db.query(`SELECT * FROM users WHERE id='${id}'`);
+    console.log(`intial \n ${user.data[0]}`);
+    if (!user.data.length)
+      throw new AppError("No user found with this id", 404);
     await db.query(
       `UPDATE users SET blacklisted=${
-        user.data[0].blacklisted ? 1 : 0
-      } WHERE id=${user.data[0].id}`
+        user.data[0].blacklisted ? 0 : 1
+      } WHERE id='${user.data[0].id}'`
     );
+
     const email = user.data[0].email;
     const message =
       "You have been " +
@@ -25,79 +28,84 @@ exports.blacklist = async (id, next) => {
         message,
       });
     } catch (err) {
-      return next(new AppError("Error in sending mail!", 500));
+      throw new AppError("Error in sending mail!", 500);
     }
 
-    const updatedUser = await db.query(`SELECT * FROM users WHERE id=${id}`);
+    const updatedUser = await db.query(`SELECT * FROM users WHERE id='${id}'`);
 
     return updatedUser.data;
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
 exports.changeDesignation = async (id, designation, next) => {
   try {
     const user = await db.query(`SELECT * FROM users WHERE id=${id}`);
-    if (!user.data.length) return user;
+    if (!user.data.length)
+      throw new AppError("No user found with this id", 404);
     await db.query(
-      `UPDATE users SET designation=${designation} WHERE id=${user.data[0].id}`
+      `UPDATE users SET designation='${designation}' WHERE id='${id}'`
     );
-    const updatedUser = await db.query(`SELECT * FROM users WHERE id=${id}`);
+    const updatedUser = await db.query(`SELECT * FROM users WHERE id='${id}'`);
 
     return updatedUser.data;
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
 exports.changeRole = async (id, role, next) => {
   try {
     const user = await db.query(`SELECT * FROM users WHERE id=${id}`);
-    if (!user.data.length) return user;
-    await db.query(`UPDATE users SET role=${role} WHERE id=${user.data[0].id}`);
+    if (!user.data.length)
+      throw new AppError("No user found with this id", 404);
+    await db.query(
+      `UPDATE users SET role='${role}' WHERE id=${user.data[0].id}`
+    );
     const updatedUser = await db.query(`SELECT * FROM users WHERE id=${id}`);
 
     return updatedUser.data;
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
 exports.deleteUser = async (id, next) => {
   try {
     const user = await db.query(`SELECT * FROM users WHERE id=${id}`);
-    if (!user.data.length) return user;
-    await db.query(`DELETE FROM users WHERE id=${id}`);
-    return user.data;
+    if (!user.data.length)
+      throw new AppError("No user found with this id", 404);
+    await db.query(`DELETE FROM users WHERE id='${id}'`);
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
 exports.addBio = async (id, bio, next) => {
   try {
     const updatedUser = await db.query(
-      `UPDATE users SET bio=${bio} WHERE id=${id}`
+      `UPDATE users SET bio='${bio}' WHERE id='${id}'`
     );
     return updatedUser.data;
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
 exports.fetchOneUser = async (id, next) => {
   try {
     //find the user
-    const user = await db.query(`SELECT * FROM users WHERE id=${id}`);
+    const user = await db.query(`SELECT * FROM users WHERE id='${id}'`);
+
     if (!user.data.length)
-      return next(new AppError("No user found with this id", 404));
+      throw new AppError("No user found with this id", 404);
     const userData = user.data[0];
 
     return userData;
   } catch (err) {
     console.error(err);
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
@@ -108,7 +116,7 @@ exports.fetchPointHistoryofUser = async (user_id, next) => {
   // assign to user object
   try {
     const points = await db.query(
-      `SELECT * allotments WHERE user_id=${user_id}`
+      `SELECT * FROM allotments WHERE user_id='${user_id}'`
     );
     if (points.data.length) {
       const allotedPoints = [];
@@ -116,7 +124,7 @@ exports.fetchPointHistoryofUser = async (user_id, next) => {
       return allotedPoints;
     } else return null;
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
@@ -125,35 +133,73 @@ exports.fetchAllUsers = async (next) => {
     const users = await db.query("SELECT id, name, email FROM users");
     return users.data;
   } catch (err) {
-    return next(new AppError("Error fetching users", 400));
+    throw err;
   }
 };
 
 exports.awardPoints = async (data, next) => {
   try {
-    const user = await db.query(`SELECT * FROM users WHERE id=${data.user_id}`);
+    const user = await db.query(
+      `SELECT * FROM users WHERE id='${data.user_id}'`
+    );
 
     if (!user.data.length)
-      return next(new AppError("No user found with this id", 404));
+      throw new AppError("No user found with this id", 404);
 
     const points = user.data[0].points;
     const newPoints = points + data.points;
     await db.query(
-      `UPDATE users SET points=${newPoints} WHERE id=${data.user_id}`
+      `UPDATE users SET points=${newPoints} WHERE id='${data.user_id}'`
     );
     const queryParams = [
       data.user_id,
       data.awarded_by,
       data.points,
       data.reason,
-      data.tmestamp,
+      data.timestamp,
     ];
     await db.query(
-      `INSERT INTO users (user_id, awarded_by, points, reason , timestamp) VALUES (?,?,?,?,?)`,
+      `INSERT INTO allotments (user_id, awarded_by, points, reason , timestamp) VALUES (?,?,?,?,?)`,
       queryParams
     );
   } catch (err) {
     console.log(err);
-    return next(new AppError("Something went wrong", 500));
+    throw err;
+  }
+};
+
+exports.bulkSignup = async (emails, next) => {
+  try {
+    //array of emails
+    emails.forEach(async (email) => {
+      //Generate a random OTP and hash it using bcrpyt
+      const OTP = String(Math.floor(Math.random() * 10000 + 1));
+      const tempPassword = await bcrypt.hash(OTP, 12);
+      const tempName = email.split("@")[0]; //temp name the email characters  e.g dsp13
+      const timestamp = Date.now(); //timestamp
+      const queryParams = [tempName, email, "user", timestamp, tempPassword];
+
+      //insert into database
+      await db.query(
+        `INSERT INTO users (name, email, role,timestamp, password) VALUES (?, ?, ?,?,?)`,
+        queryParams
+      );
+      //Message
+      const message = `Dear ${tempName}, \n You are added to the Neuromancers Society\n The tasks and leaderboard will be on this temp.com.\n Login to the page using your college email id and this OTP, change the password after this login.\n \n ${OTP} `;
+      //sendEmail
+      console.log(message);
+      try {
+        sendEmail({
+          email,
+          subject: "Welcome to Neuromancers",
+          message,
+        });
+      } catch (err) {
+        console.log(err.message);
+        throw new AppError("There was an error sending email", 500);
+      }
+    });
+  } catch (err) {
+    throw err;
   }
 };

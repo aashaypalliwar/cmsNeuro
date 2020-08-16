@@ -21,7 +21,7 @@ const verifyJWT = async (token, next) => {
   try {
     return await promisify(jwt.verify)(token, JWT_SECRET);
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw new AppError("Error in verifying token", 500);
   }
 };
 
@@ -32,23 +32,21 @@ exports.protect = async (token, next) => {
     const decoded = await verifyJWT(token); //decode the jwt key, if error, handled in error handler
 
     //check if user exists
-    if (!decoded) return next(new AppError("Your Password or email is Wrong"));
+    if (!decoded) throw new AppError("Your Password or email is Wrong");
 
     const currentUser = await db.query(
       `SELECT * FROM users WHERE id=${decoded.id}`
     );
     if (!currentUser.data.length) {
-      return next(
-        new AppError(
-          "The user belonging to this token does no longer exist.",
-          401
-        )
+      throw new AppError(
+        "The user belonging to this token does no longer exist.",
+        401
       );
     }
     // return the userData
     return currentUser.data[0];
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
@@ -58,20 +56,17 @@ exports.accessRestrict = async (id, roles, next) => {
     //1) find the role of the user
     const user = await db.query(`SELECT role FROM users WHERE id=${id}`);
     if (!user.data.length) {
-      return next(
-        new AppError(
-          "The user belonging to this token does no longer exist.",
-          401
-        )
+      throw new AppError(
+        "The user belonging to this token does no longer exist.",
+        401
       );
     }
     const role = user.data[0].role;
 
     //check if roles include that
-    if (!roles.includes(role)) return false;
-    return true;
+    return roles.includes(role);
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
@@ -82,16 +77,16 @@ exports.checkCredentials = async (email, password, next) => {
     );
     //1) find the user
     if (!currentUser.data.length)
-      return next(new AppError("Your email or password is wrong.", 401));
+      throw new AppError("Your email or password is wrong.", 401);
 
     //2) check if the current password is correct
     if (!(await bcrypt.compare(password, currentUser.data[0].password))) {
-      return next(new AppError("Your email or password is wrong.", 401));
+      throw new AppError("Your email or password is wrong.", 401);
     }
 
     return currentUser.data[0];
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    throw err;
   }
 };
 exports.updatePassword = async (id, currentPassword, newPassword, next) => {
@@ -101,18 +96,18 @@ exports.updatePassword = async (id, currentPassword, newPassword, next) => {
       `SELECT email,password FROM users WHERE id=${id}`
     );
     if (!currentUser.data.length)
-      return next(
-        new AppError(
-          "The user belonging to this token does no longer exist.",
-          401
-        )
+      throw new AppError(
+        "The user belonging to this token does no longer exist.",
+        401
       );
 
     //2) check if the current password is correct
-    if (
-      !(await bcrypt.compare(currentPassword, currentUser.data[0].password))
-    ) {
-      return next(new AppError("Your current password is wrong.", 401));
+    const check = await bcrypt.compare(
+      currentPassword,
+      currentUser.data[0].password
+    );
+    if (!check) {
+      throw new AppError("Your current password is wrong.", 401);
     }
     //hash the newPasword
     const hashedNewPassword = await bcrypt.hash(newPassword, 12);
@@ -121,20 +116,21 @@ exports.updatePassword = async (id, currentPassword, newPassword, next) => {
       `UPDATE users SET password='${hashedNewPassword}' where id=${id}`
     );
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
 exports.forgotPassword = async (email, next) => {
   try {
     //check if user exists
-    const user = await db.query(`SELECT * FROM users WHERE email=${email}`);
-
+    const user = await db.query(`SELECT * FROM users WHERE email='${email}'`);
     if (!user.data.length) {
-      return next(new AppError("No user with that email", 404));
+      throw new AppError("No user with that email", 404);
     }
     //generate a token
-    const resetToken = crypto.randomBytes(32).toString("hex");
+    // const resetToken = crypto.randomBytes(32).toString("hex");
+    //Four digit OTP
+    const resetToken = String(Math.floor(Math.random() * 10000 + 1));
 
     //hash the token and make token expiry
     const passwordResetToken = crypto
@@ -144,14 +140,15 @@ exports.forgotPassword = async (email, next) => {
 
     const resetTokenExpires = Date.now() + 10 * 60 * 1000;
 
+    console.log(resetTokenExpires);
     //save it database
     await db.query(
-      `UPDATE users SET reset_token='${passwordResetToken}' reset_token_expires_at='${resetTokenExpires}' WHERE email=${email}`
+      `UPDATE users SET reset_token='${passwordResetToken}', reset_token_expires_at='${resetTokenExpires}' WHERE email='${email}'`
     );
 
     //send an Email to the User
 
-    const message = `Forgot your password? \n Paste this Code on your screen and enter your New Password.\n If you didn't forget your password, please ignore this email!\n  ${resetToken} \n `;
+    const message = `Dear ${user.data[0].name}, \n Forgot your password? \n Paste this Code on your screen and enter your New Password.\n If you didn't forget your password, please ignore this email!\n  \n\n \n${resetToken} \n Regards \n Secretary \n Neuromancers `;
 
     //if succesfull then goes back to main function else erase the reset token and expiry from database
     try {
@@ -165,10 +162,10 @@ exports.forgotPassword = async (email, next) => {
         `UPDATE users SET reset_token=NULL reset_token_expires_at=NULL WHERE email=${email}`
       );
 
-      return next(new AppError("There was an error sending email"), 500);
+      throw new AppError("There was an error sending email", 500);
     }
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };
 
@@ -176,16 +173,13 @@ exports.resetPassword = async (token, newPassword, next) => {
   try {
     //find user on thebasis of hashed token
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
-
+    console.log(hashedToken);
     const user = await db.query(
-      `SELECT * FROM users WHERE reset_token=${hashedToken} AND datetime('now)< reset_token_expires_at`
+      `SELECT * FROM users WHERE reset_token='${hashedToken}'`
     );
 
     if (!user.data.length)
-      return next(
-        new AppError("No user found, Token is Invalid or expired"),
-        403
-      );
+      throw new AppError("No user found, Token is Invalid or expired", 403);
 
     //hash the newPassword
     const hashedNewPassword = await bcrypt.hash(newPassword, 12);
@@ -197,43 +191,6 @@ exports.resetPassword = async (token, newPassword, next) => {
 
     return user;
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
-  }
-};
-
-exports.bulkSignup = async (emails, next) => {
-  try {
-    //array of emails
-    emails.map(async (email) => {
-      //Generate a random OTP and hash it using bcrpyt
-      const OTP = String(Math.floor(Math.random() * 1000 + 1));
-      const tempPassword = await bcrypt.hash(OTP, 12);
-
-      const tempName = email.split("@")[0]; //temp name the email characters  e.g dsp13
-
-      const timestamp = Date.now(); //timestamp
-      const queryParams = [tempName, email, "user", timestamp, tempPassword];
-
-      //insert into database
-      await db.query(
-        `INSERT INTO users (name, email, role,timestamp, password) VALUES (?, ?, ?,?,?)`,
-        queryParams
-      );
-      //Message
-      const message = `Dear ${tempName}, \n You are added to the Neuromancers Society\n The tasks and leaderboard will be on this temp.com.\n Login to the page using your college email id and this OTP, change the password after this login.\n \n ${OTP} `;
-      //sendEmail
-      try {
-        sendEmail({
-          email,
-          subject: "Welcome to Neuromancers",
-          message,
-        });
-      } catch (err) {
-        console.log(err.message);
-        return next(new AppError("There was an error sending email", 500));
-      }
-    });
-  } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    throw err;
   }
 };

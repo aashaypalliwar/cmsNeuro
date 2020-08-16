@@ -11,6 +11,6 @@ router.get("/", getLeaderBoard);
 
 router
   .route("/refresh")
-  .delete(protect, restrictTo("superAdmin", "admin"), refreshLeaderBoard);
+  .patch(protect, restrictTo("superAdmin", "admin"), refreshLeaderBoard);
 
 module.exports = router;

@@ -7,8 +7,8 @@ const AppError = require("../utils/appError");
 
 const createSendToken = async (user, statusCode, res) => {
   try {
-    console.log(user);
-    const token = await authLogic.signToken(user.id);
+    // console.log(user);
+    const token = authLogic.signToken(user.id);
     res.status(statusCode).json({
       status: "success",
       token,
@@ -38,15 +38,15 @@ exports.protect = async (req, res, next) => {
     req.user = await authLogic.protect(token, next);
     next();
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    return next(err);
   }
 };
-
 exports.restrictTo = (...roles) => {
-  return (req, res, next) => {
+  return async (req, res, next) => {
     const id = req.user.id;
-
-    if (!authLogic.accessRestrict(id, roles, next))
+    const check = await authLogic.accessRestrict(id, roles, next);
+    console.log(check);
+    if (!check)
       return next(
         new AppError("You do not have permission to perform this action", 403)
       );
@@ -69,7 +69,7 @@ exports.login = async (req, res, next) => {
     // 3) If everything ok, send token to client
     createSendToken(user, 200, res);
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    return next(err);
   }
 };
 
@@ -81,7 +81,7 @@ exports.updatePassword = async (req, res, next) => {
       currentPassword: req.body.password,
       newPassword: req.body.newPassword,
     };
-
+    // if (true) return next(new AppError("Test went Wrong", 500));
     await authLogic.updatePassword(
       data.id,
       data.currentPassword,
@@ -91,7 +91,7 @@ exports.updatePassword = async (req, res, next) => {
 
     createSendToken(req.user, 200, res);
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    return next(err);
   }
 };
 
@@ -108,7 +108,7 @@ exports.forgotPassword = async (req, res, next) => {
       message: "Token sent to mail",
     });
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    return next(err);
   }
 };
 
@@ -121,22 +121,6 @@ exports.resetPassword = async (req, res, next) => {
 
     createSendToken(user, 200, res);
   } catch (err) {
-    return next(new AppError("Something went wrong", 500));
-  }
-};
-
-exports.bulkSignup = async (req, res, next) => {
-  try {
-    //emails sepearted by commas
-    const emails = req.body.emails.split(",");
-
-    await authLogic.bulkSignup(emails, next);
-
-    res.status(200).json({
-      success,
-      message: "Users successfully signed up",
-    });
-  } catch (err) {
-    return next(new AppError("Something went wrong", 500));
+    return next(err);
   }
 };
