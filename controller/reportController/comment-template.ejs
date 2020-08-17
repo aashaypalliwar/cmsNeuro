@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="http://netdna.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style type="text/css">
+      body {
+        background: #f5f5f5;
+        margin-left:10px;
+        margin-right:20px;
+        
+        align-items: center;
+      }
+      .text-white-50 {
+        color: rgba(255, 255, 255, 0.5);
+      }
+      .bg-blue {
+        background-color: #00b5ec;
+      }
+      .border-bottom {
+        border-bottom: 1px solid #e5e5e5;
+      }
+      .box-shadow {
+        box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
+      }
+    </style>
+  </head>
+  <body>
+    <main role="main" class="container">
+      <div
+        class="d-block align-items-center p-3 my-3 text-white-50 bg-blue rounded box-shadow"
+      >
+        <div class="lh-100">
+          <h4 class="mb-0 text-white strong lh-100">Dummy Task</h4>
+          <h6>Comments</h6>
+        </div>
+      </div>
+      <% if (comments.length > 0) { %> <% comments.forEach(comment => {%>
+        <div class="media text-muted pt-3 d-block mx-3">
+          <p class="media-body pb-3 mb-0 lh-125 border-bottom border-gray">
+            <strong class="d-inline pull-left text-gray-dark"><%= comment.userName %> -- </strong>
+            <strong class="d-inline pull-right mt-3"><%= comment.timestamp %></strong>
+            <br>
+            <%= comment.body %>
+            
+          </p>
+        </div>
+        
+      
+      <% });%> <% }%>
+      
+      </div>
+    </main>
+    <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript"></script>
+  </body>
+</html>
