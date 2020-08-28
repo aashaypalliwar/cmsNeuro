@@ -10,10 +10,10 @@ module.exports.userSchema = {
     points INTEGER DEFAULT 0,
     tracking_points BIT DEFAULT 1,
     blacklisted BIT DEFAULT 0,
-    timestamp TEXT NOT NULL,
+    timestamp INTEGER NOT NULL,
     password  TEXT NOT NULL,
     reset_token	TEXT,
-    reset_token_expires_at TEXT,
+    reset_token_expires_at INTEGER,
     bio TEXT`,
 };
 
@@ -25,7 +25,7 @@ module.exports.topicSchema = {
     scope TEXT NOT NULL,
     important BIT DEFAULT 0,
     archived BIT DEFAULT 0,
-    archived_at TEXT`,
+    archived_at INTEGER`,
 };
 
 module.exports.taskSchema = {
@@ -38,9 +38,9 @@ module.exports.taskSchema = {
     assignable BIT DEFAULT 1,
     user_id INTEGER NOT NULL,
     topic_id INTEGER NOT NULL,
-    deadline TEXT NOT NULL,
+    deadline INTEGER NOT NULL,
     archived BIT DEFAULT 0,
-    archived_at TEXT,
+    archived_at INTEGER,
     FOREIGN KEY(user_id) REFERENCES users(id),
     FOREIGN KEY(topic_id) REFERENCES topics(id)
    `,
@@ -50,7 +50,7 @@ module.exports.tagSchema = {
   tableName: "tags",
   tableSchema: `id INTEGER PRIMARY KEY AUTOINCREMENT,
     tag TEXT NOT NULL,
-    timestamp TEXT NOT NULL,
+    timestamp INTEGER NOT NULL,
     task_id INTEGER,
     FOREIGN KEY(task_id) REFERENCES tasks(id)`,
 };
@@ -59,7 +59,7 @@ module.exports.commentSchema = {
   tableName: "comments",
   tableSchema: `id INTEGER PRIMARY KEY AUTOINCREMENT,
     text TEXT NOT NULL,
-    timestamp TEXT NOT NULL,
+    timestamp INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
     task_id INTEGER NOT NULL,
     FOREIGN KEY(user_id) REFERENCES users(id),
@@ -71,7 +71,7 @@ module.exports.assignmentRequestSchema = {
   tableSchema: `id INTEGER PRIMARY KEY AUTOINCREMENT,
     task_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
-    timestamp TEXT NOT NULL,
+    timestamp INTEGER NOT NULL,
     reviewed BIT DEFAULT 0,
     accepted BIT DEFAULT 0,
     FOREIGN KEY(task_id) REFERENCES tasks(id),
@@ -83,7 +83,7 @@ module.exports.assignmentSchema = {
   tableSchema: `id INTEGER PRIMARY KEY AUTOINCREMENT,
     task_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
-    timestamp TEXT NOT NULL,
+    timestamp INTEGER NOT NULL,
     FOREIGN KEY(task_id) REFERENCES tasks(id),
     FOREIGN KEY(user_id) REFERENCES users(id)`,
 };
