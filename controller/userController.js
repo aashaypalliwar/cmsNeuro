@@ -172,7 +172,7 @@ exports.bulkSignup = async (req, res, next) => {
     //emails sepearted by commas
     const emails = req.body.emails.split(",");
 
-    console.log(await bulkSignup(emails, next));
+    await bulkSignup(emails, next);
 
     res.status(200).json({
       status: "success",

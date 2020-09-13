@@ -120,7 +120,7 @@ exports.fetchPointHistoryofUser = async (user_id, next) => {
     );
     if (points.data.length) {
       const allotedPoints = [];
-      points.data.map((point) => allotedPoints.push(point));
+      points.data.forEach((point) => allotedPoints.push(point));
       return allotedPoints;
     } else return null;
   } catch (err) {
@@ -159,7 +159,7 @@ exports.awardPoints = async (data, next) => {
       data.timestamp,
     ];
     await db.query(
-      `INSERT INTO allotments (user_id, awarded_by, points, reason , timestamp) VALUES (?,?,?,?,?)`,
+      `INSERT INTO allotments (user_id, awarded_by, points_awarded, reason , timestamp) VALUES (?,?,?,?,?)`,
       queryParams
     );
   } catch (err) {

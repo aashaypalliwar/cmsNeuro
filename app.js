@@ -19,7 +19,10 @@ const taskRouter = require("./routes/taskRouter");
 const authRouter = require("./routes/authRouter");
 const announcementRouter = require("./routes/announcementRouter");
 const leaderboardRouter = require("./routes/leaderboardRouter");
-
+const { sendFornightMemberReport, removeFile } = require("./cron/cronJobs");
+const {
+  generateReport,
+} = require("./controller/reportController/reportController");
 app.use(cors());
 
 app.options("*", cors());
@@ -46,7 +49,9 @@ app.use("/api/v1/board/leaderboard", leaderboardRouter);
 app.use("/api/v1/board/topics", topicRouter);
 app.use("/api/v1/board/announcements", announcementRouter);
 app.use("/api/v1/board/topics/:topic_id/tasks", taskRouter);
-
+app.get("/api/v1/test", sendFornightMemberReport);
+app.get("/api/v1/test2", removeFile);
+app.get("/api/v1/report", generateReport);
 //client/build
 if (NODE_ENV === "production") {
   app.use(express.static(__dirname + "/client/build"));
