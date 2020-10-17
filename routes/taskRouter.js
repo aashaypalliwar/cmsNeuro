@@ -1,69 +1,85 @@
 const express = require("express");
-const router = express.Router();
 
-const authController = require("./../controller/authController");
-const taskController = require("./../controller/boardControllers/taskController");
+
+const {protect,restrictTo} = require("./../controller/authController");
+const {
+  accessScope, 
+  getAllTasks,
+  createTask,
+  getTask,
+  deleteTask,
+  changeAssignableStatus,
+  addTagToTask,
+  removeTagfromTask,
+  requestAssignment,
+  acceptRequest,
+  getCommentsByTask,
+  removeAssignment,
+  getAssignments,
+  createAssignment
+} = require("./../controller/boardControllers/taskController");
 
 //make sure that user is logged in
-router.use(authController.protect);
+//router.use(authController.protect);
 
 //check the scope of the topic and userRole and restrict or allow the access
-router.use(taskController.accessScope);
+//router.use(taskController.accessScope);
 
 //get and create Tasks
+const router = express.Router();
 router
   .route("/")
-  .get(taskController.getAllTasks)
-  .post(taskController.createTask);
+  .get(getAllTasks)
+  .post(createTask);
 
 //get task, archive task and toggle status of assignment
 router
   .route("/:task_id")
-  .get(taskController.getTask)
+  .get(getTask)
   .delete(
-    authController.restrictTo("superAdmin", "admin"),
-    taskController.deleteTask
+    //restrictTo("superAdmin", "admin"),
+    deleteTask
   )
   .patch(
-    authController.restrictTo("superAdmin", "admin"),
-    taskController.changeAssignableStatus
+    //restrictTo("superAdmin", "admin"),
+    changeAssignableStatus
   );
 
 //tags  add and remove tags
 
 router
   .route("/:task_id/tags")
-  .post(taskController.addTagToTask)
-  .delete(taskController.removeTagfromTask);
+  .post(addTagToTask)
+  .delete(removeTagfromTask);
 
 //create , get and remove assignments
 
 router
   .route("/:task_id/assignments")
-  .get(taskController.getAssignments)
+  .get(getAssignments)
   .post(
-    authController.restrictTo("superAdmin", "admin"),
-    taskController.createAssignment
+    restrictTo("superAdmin", "admin"),
+    createAssignment
   )
   .patch(
-    authController.restrictTo("superAdmin", "admin"),
-    taskController.removeAssignment
+    restrictTo("superAdmin", "admin"),
+    removeAssignment
   );
 
 //request assignment to tasks, accept requests
 
 router
   .route("/:task_id/assignmentRequest")
-  .post(taskController.requestAssignment)
+  .post(requestAssignment)
   .patch(
-    authController.restrictTo("superAdmin", "admin"),
-    taskController.acceptRequest
+    restrictTo("superAdmin", "admin"),
+    acceptRequest
   );
 
 //get paginated comments------offset is the index after which to get the next ${limit} comments
 //if offset is not provided, it will get the first ${limit} comments
 router
   .route("/:task_id/comments/:limit/:offset")
-  .get(taskController.getCommentsByTask);
+  .get(getCommentsByTask);
 
 module.exports = router;

@@ -57,12 +57,12 @@ exports.archiveOneAnnouncement = async (announcement_id, next) => {
     );
     if (!announcement.data.length)
       throw new AppError("There is no assignment with this id", 404);
+    const toBeUpdated = `isArchived = 1, archived_at = ${Date.now()}`;
     const archivedAnnouncement = await db.query(
-      `UPDATE announcements SET isArchived = 1 WHERE id = ${announcement_id}`
+      `UPDATE announcements SET ${toBeUpdated} WHERE id = ${announcement_id}`
     );
     return archivedAnnouncement;
   } catch (err) {
-    console.log("Hi");
     throw err;
   }
 };

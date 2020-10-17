@@ -115,6 +115,7 @@ exports.createATask = async (task, next) => {
       `INSERT INTO tasks (heading, description,scope, user_id, topic_id,deadline) VALUES (?,?,?,?,?,?)`,
       queryParams
     );
+    return
   } catch (err) {
     throw err;
   }

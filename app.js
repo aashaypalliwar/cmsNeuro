@@ -20,6 +20,8 @@ const authRouter = require("./routes/authRouter");
 const announcementRouter = require("./routes/announcementRouter");
 const leaderboardRouter = require("./routes/leaderboardRouter");
 
+const deleteArchiveCron = require("./cron/deleteArchived");
+
 app.use(cors());
 
 app.options("*", cors());
@@ -38,14 +40,19 @@ if (NODE_ENV !== "production") {
   app.use(morgan("dev"));
 }
 
+deleteArchiveCron.start();
 //ROUTES
 //"/api/auth"
+
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/board/leaderboard", leaderboardRouter);
+app.use("/api/v1/board/topics/:topic_id/tasks", taskRouter);
 app.use("/api/v1/board/topics", topicRouter);
 app.use("/api/v1/board/announcements", announcementRouter);
-app.use("/api/v1/board/topics/:topic_id/tasks", taskRouter);
+
+
+
 
 //client/build
 if (NODE_ENV === "production") {
