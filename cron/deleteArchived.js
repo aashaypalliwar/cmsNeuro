@@ -1,25 +1,24 @@
+//requiring database
 const db = require("./../model/dbModel/database");
+//requiring cron-module
 const cron = require("node-cron");
+//The function that deletes all those that were archived 30 days ago.
 const deleteArchived = async(req,res,next) => {
     try {
-        //const upperTime = Date.now() - 30 * 24 * 60 * 60 * 1000; 
-        const upperTime = Date.now() - 60 * 1000; 
-        // const announcements = await db.query(`DELETE FROM announcements WHERE archived_at <= ${upperTime}`);
-        // const topics = await db.query(`DELETE FROM topics WHERE archived_at <= ${upperTime}`);
-        // const tasks = await db.query(`DELETE FROM tasks WHERE archived_at <= ${upperTime}`);
-        const announcements = await db.query(`SELECT * FROM announcements WHERE archived_at <= ${upperTime}`);
-        const topics = await db.query(`SELECT * FROM topics WHERE archived_at <= ${upperTime}`);
-        const tasks = await db.query(`SELECT * FROM tasks WHERE archived_at <= ${upperTime}`);
-        next();
+        const upperTime = Date.now() - 1000 * 60 * 60 * 24 * 30; 
+        const announcements = await db.query(`DELETE FROM announcements WHERE archived_at <= ${upperTime}`);
+        const topics = await db.query(`DELETE FROM topics WHERE archived_at <= ${upperTime}`);
+        const tasks = await db.query(`DELETE FROM tasks WHERE archived_at <= ${upperTime}`);
     } catch (error) {
         console.log(error);
-        next();
     }
 }
 
-var deleteArchiveControl = cron.schedule('3 9 17 * * Friday',() => {
-    //deleteArchived();
-    console.log("From cronJob");
+//calls the delition function on every saturday at 15:13:50
+var deleteArchiveControl = cron.schedule('50 13 15 * * Saturday',async() => {
+    console.log('Deleting archive cron is started...');
+    await deleteArchived();
+    console.log("Deleting archive cron is completed...");
 })
 
 module.exports = deleteArchiveControl;

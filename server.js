@@ -1,3 +1,4 @@
+//Getting the port being used from config file
 const { PORT } = require("./utils/config");
 const comments = require("./comments/Comments.js");
 
@@ -12,6 +13,7 @@ const app = require("./app");
 //CONNECT TO DATABASE
 require("./model/dbModel/database");
 
+//Starting the server
 const server = app.listen(PORT, () => {
   console.log(`server is running on ${PORT} ...`);
 });
