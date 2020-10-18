@@ -37,27 +37,39 @@
 </head>
 
 <body>
-    <h1>Archived Tasks</h1>
+    <h1 style="text-align:center"><u>Archived Tasks</u></h1>
     <main role="main" class="container">
         <% if (reportData.topics.length){%> <%
+      
       reportData.topics.forEach(topic=>{%>
-        <div>
-            <h3><%= topic.topicData.heading %></h3>
-            <p><%= topic.topicData.description %></p>
-            <% if(topic.tasks.length){%> <% topic.tasks.forEach(task=>{%>
-            <div>
-                <h4><%= task.taskData.heading %></h4>
-                <p><%= task.taskData.description %></p>
-                <h5>Comments:</h5>
-                <%if(task.comments.length){%> <% task.comments.forEach(comment=>{%>
 
-                <b><%= comment.user_id %>, <%= comment.timestamp%>: </b> <%=
+        <div>
+            <ol>
+                <h3>
+                    <li><%= topic.topicData.heading %></li>
+                </h3>
+                <p><%= topic.topicData.description %></p>
+                <% if(topic.tasks.length){%> <% topic.tasks.forEach(task=>{%>
+                <div>
+                    <ol>
+                        <li>
+                            <h4><%= task.taskData.heading %></h4>
+                        </li>
+                        <p><%= task.taskData.description %></p>
+                        <h5>Comments:</h5>
+                        <%if(task.comments.length){%> <% task.comments.forEach(comment=>{%>
+
+                        <b><%= comment.user_id %>, <%= comment.timestamp%>: </b> <%=
             comment.text %>
-                <hr>
+                        <hr>
+                        <% });%> <% }%>
+                    </ol>
+                </div>
                 <% });%> <% }%>
-            </div>
-            <% });%> <% }%>
+            </ol>
         </div>
+
+
         <% });%> <% }%>
         <br />
         <h3>Independent Tasks</h3>
