@@ -17,6 +17,12 @@ const createSendToken = async (user, statusCode, res) => {
   try {
     // console.log(user);
     const token = signToken(user.id);
+
+    const cookieOptions = {
+      httpOnly: true,
+    };
+    res.cookie("jwt", token, cookieOptions);
+
     res.status(statusCode).json({
       status: "success",
       token,
@@ -31,6 +37,7 @@ const createSendToken = async (user, statusCode, res) => {
 
 exports.protect = async (req, res, next) => {
   try {
+    console.log(req.cookies);
     let token;
     if (
       req.headers.authorization &&
@@ -118,9 +125,10 @@ exports.forgotPassword = async (req, res, next) => {
 exports.resetPassword = async (req, res, next) => {
   try {
     //take token and newPassword as input
-    const { token, newPassword } = req.body;
+    const token = req.body.token;
+    const password = req.body.password;
 
-    const user = await resetPassword(token, newPassword, next);
+    const user = await resetPassword(token, password, next);
 
     createSendToken(user, 200, res);
   } catch (err) {

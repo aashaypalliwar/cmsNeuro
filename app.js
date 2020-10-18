@@ -10,8 +10,6 @@ const AppError = require("./utils/appError.js");
 const errorHandler = require("./utils/errorHandler");
 const { NODE_ENV } = require("./utils/config");
 
-const app = express();
-
 //ROUTERS
 const userRouter = require("./routes/userRouter");
 const topicRouter = require("./routes/topicRouter");
@@ -23,6 +21,9 @@ const { sendFornightMemberReport, removeFile } = require("./cron/cronJobs");
 const {
   generateReport,
 } = require("./controller/reportController/reportController");
+
+const app = express();
+
 app.use(cors());
 
 app.options("*", cors());
@@ -31,10 +32,11 @@ app.use(helmet());
 
 // Data sanitization against XSS
 app.use(xss());
-//CORS Request
 
 app.use(express.json());
 app.use(cookieParser());
+
+//CORS Request
 
 //REQUEST LOGGER
 if (NODE_ENV !== "production") {
