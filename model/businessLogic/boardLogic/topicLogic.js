@@ -50,8 +50,9 @@ exports.archiveOneTopic = async (topicId, next) => {
     const topic = await db.query(`SELECT * FROM topics WHERE id = ${topicId}`);
     if (!topic.data.length)
       throw new AppError("There is no topic with that Id", 404);
-
-    db.query(`UPDATE topic SET isArchived = 1 WHERE id = ${topicId}`);
+    const toBeUpdated = `isArchived = 1, archived_at = ${Date.now()}`;
+    db.query(`UPDATE topics SET ${toBeUpdated} WHERE id = ${topicId}`);
+    return;
   } catch (err) {
     console.log(err);
     throw err;
@@ -68,7 +69,7 @@ exports.updateOneTopic = async (topicDetails, next) => {
     const newDescription = topicDetails.newDescription || topic.description;
     const newScope = topicDetails.newScope || topic.scope;
 
-    const sql = `UPDATE topic SET heading = '${newHeading}', description = '${newDescription}', scope = '${newScope}' WHERE id = ${topicId}`;
+    const sql = `UPDATE topics SET heading = '${newHeading}', description = '${newDescription}', scope = '${newScope}' WHERE id = ${topicId}`;
     const updatedTopic = db.query(sql);
     return updatedTopic;
   } catch (err) {
@@ -76,3 +77,21 @@ exports.updateOneTopic = async (topicDetails, next) => {
     throw err;
   }
 };
+
+exports.markTopicAsImportant = async(topicId,next) => {
+  try {
+    const topic = await db.query(`SELECT * FROM topics WHERE id = ${topicId}`);
+    let message;
+    if(topic.data[0].important === 1) {
+      message = "Marked as unimportant successfully.";
+    } else {
+      message = "Marked as important successfully.";
+    }
+    
+    await db.query(`UPDATE topics SET important = ${!(topic.data[0].important)} WHERE id = ${topicId}`)
+    return message;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}

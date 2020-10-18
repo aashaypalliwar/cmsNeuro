@@ -61,14 +61,15 @@ exports.getTask = async (req, res, next) => {
 exports.createTask = async (req, res, next) => {
   try {
     const task = {
-      user_id: req.user.id,
+      //user_id: req.user.id,
+      user_id: 10,
       heading: req.body.heading,
       description: req.body.description,
       topic_id: req.params.topic_id,
       deadline: req.body.deadline,
     };
-
-    await createATask(task);
+    console.log(task);
+    await createATask(task,next);
 
     res.status(201).json({
       status: "success",
@@ -82,6 +83,7 @@ exports.createTask = async (req, res, next) => {
 exports.getAllTasks = async (req, res, next) => {
   try {
     const topic_id = req.params.topic_id;
+    console.log(req.params);
     const tasks = await getAllTasks(topic_id);
 
     res.status(200).json({
