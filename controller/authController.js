@@ -11,16 +11,22 @@ const {
 //utils
 const AppError = require("../utils/appError");
 
-// const {JWT_COOKIE_EXPIRES_IN} = require("../utils/config");
+const { JWT_COOKIE_EXPIRES_IN, NODE_ENV } = require("../utils/config");
 
 const createSendToken = async (user, statusCode, res) => {
   try {
     // console.log(user);
     const token = signToken(user.id);
-
+    // console.log(token);
     const cookieOptions = {
+      expires: new Date(
+        Date.now() + JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+      ),
       httpOnly: true,
     };
+    if (NODE_ENV == "production") {
+      cookieOptions.secure = true;
+    }
     res.cookie("jwt", token, cookieOptions);
 
     res.status(statusCode).json({
@@ -30,6 +36,7 @@ const createSendToken = async (user, statusCode, res) => {
         user,
       },
     });
+    // console.log(res);
   } catch (error) {
     console.log(error);
   }
