@@ -10,8 +10,6 @@ const AppError = require("./utils/appError.js");
 const errorHandler = require("./utils/errorHandler");
 const { NODE_ENV } = require("./utils/config");
 
-const app = express();
-
 //ROUTERS
 const userRouter = require("./routes/userRouter");
 const topicRouter = require("./routes/topicRouter");
@@ -19,6 +17,12 @@ const taskRouter = require("./routes/taskRouter");
 const authRouter = require("./routes/authRouter");
 const announcementRouter = require("./routes/announcementRouter");
 const leaderboardRouter = require("./routes/leaderboardRouter");
+const { sendFornightMemberReport, removeFile } = require("./cron/cronJobs");
+const {
+  generateReport,
+} = require("./controller/reportController/reportController");
+
+const app = express();
 
 const deleteArchiveCron = require("./cron/deleteArchived");
 //handling cross origin requests
@@ -30,10 +34,11 @@ app.use(helmet());
 
 // Data sanitization against XSS
 app.use(xss());
-//CORS Request
 
 app.use(express.json());
 app.use(cookieParser());
+
+//CORS Request
 
 //REQUEST LOGGER
 if (NODE_ENV !== "production") {
@@ -50,9 +55,6 @@ app.use("/api/v1/board/leaderboard", leaderboardRouter);
 app.use("/api/v1/board/topics/:topic_id/tasks", taskRouter);
 app.use("/api/v1/board/topics", topicRouter);
 app.use("/api/v1/board/announcements", announcementRouter);
-
-
-
 
 //client/build
 if (NODE_ENV === "production") {

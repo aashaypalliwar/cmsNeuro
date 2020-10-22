@@ -140,7 +140,7 @@ exports.forgotPassword = async (email, next) => {
 
     const resetTokenExpires = Date.now() + 10 * 60 * 1000;
 
-    console.log(resetTokenExpires);
+    // console.log(resetTokenExpires);
     //save it database
     await db.query(
       `UPDATE users SET reset_token='${passwordResetToken}', reset_token_expires_at='${resetTokenExpires}' WHERE email='${email}'`
@@ -148,7 +148,7 @@ exports.forgotPassword = async (email, next) => {
 
     //send an Email to the User
 
-    const message = `Dear ${user.data[0].name}, \n Forgot your password? \n Paste this Code on your screen and enter your New Password.\n If you didn't forget your password, please ignore this email!\n  \n\n \n${resetToken} \n Regards \n Secretary \n Neuromancers `;
+    const message = `Dear ${user.data[0].name}, \n Forgot your password? \n Paste this Code on your screen and enter your New Password.\n If you didn't forget your password, please ignore this email! \n${resetToken} \n Regards \n Secretary \n Neuromancers `;
 
     //if succesfull then goes back to main function else erase the reset token and expiry from database
     try {
@@ -172,8 +172,9 @@ exports.forgotPassword = async (email, next) => {
 exports.resetPassword = async (token, newPassword, next) => {
   try {
     //find user on thebasis of hashed token
+    // console.log(token);
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
-    console.log(hashedToken);
+    // console.log(hashedToken);
     const user = await db.query(
       `SELECT * FROM users WHERE reset_token='${hashedToken}'`
     );
@@ -189,7 +190,7 @@ exports.resetPassword = async (token, newPassword, next) => {
       `UPDATE users SET password='${hashedNewPassword}' WHERE id=${user.data[0].id}`
     );
 
-    return user;
+    return user.data[0];
   } catch (err) {
     throw err;
   }
