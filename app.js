@@ -21,7 +21,7 @@ const announcementRouter = require("./routes/announcementRouter");
 const leaderboardRouter = require("./routes/leaderboardRouter");
 
 const deleteArchiveCron = require("./cron/deleteArchived");
-
+//handling cross origin requests
 app.use(cors());
 
 app.options("*", cors());

@@ -1,3 +1,4 @@
+//This is made to check cron jobs, can be deleted
 const express = require("express");
 
 const cronJobs = require('./../cron/deleteArchived');

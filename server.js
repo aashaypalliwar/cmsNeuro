@@ -9,6 +9,7 @@ process.on("uncaughtException", (err) => {
   process.exit(1);
 });
 
+//requiring app file
 const app = require("./app");
 //CONNECT TO DATABASE
 require("./model/dbModel/database");

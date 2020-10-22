@@ -7,6 +7,7 @@ const {getAllAnnouncements, createAnnouncement, archiveAnnouncement, updateAnnou
 
 // router.use(protect);
 
+//create an announcement, get all announcements
 router
   .route("/")
   .post(
@@ -15,12 +16,14 @@ router
   )
   .get(getAllAnnouncements);
 
+  //archive an announcement
 router
     .route('/:announcement_id/archive')
     .delete(
 //         authController.restrictTo('admin'),
            archiveAnnouncement
-     )
+     );
+//updating an announcement     
 router
     .route('/:announcement_id')
     .patch(

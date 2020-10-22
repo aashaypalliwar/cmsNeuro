@@ -1,3 +1,5 @@
+//This file was written only to autenticate users using fake emails bulkly
+
 const express = require("express");
 const app = require('./app');
 const bcrypt = require('bcryptjs');
