@@ -26,9 +26,14 @@ const app = express();
 
 const deleteArchiveCron = require("./cron/deleteArchived");
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
 
-app.options("*", cors());
+// app.options("*", cors());
 
 app.use(helmet());
 

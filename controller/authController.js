@@ -44,7 +44,8 @@ const createSendToken = async (user, statusCode, res) => {
 
 exports.protect = async (req, res, next) => {
   try {
-    console.log(req.cookies);
+    // console.log(req.cookies);
+    // console.log(req.headers);
     let token;
     if (
       req.headers.authorization &&
