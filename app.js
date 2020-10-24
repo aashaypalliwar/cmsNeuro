@@ -25,10 +25,15 @@ const {
 const app = express();
 
 const deleteArchiveCron = require("./cron/deleteArchived");
-//handling cross origin requests
-app.use(cors());
 
-app.options("*", cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
+
+// app.options("*", cors());
 
 app.use(helmet());
 
