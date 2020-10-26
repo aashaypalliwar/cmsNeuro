@@ -28,7 +28,7 @@ const {
 //get and create Tasks
 const router = express.Router();
 router
-  .route("/")
+  .route("/:topic_id/tasks")
   .get(getAllTasks)
   .post(createTask);
 

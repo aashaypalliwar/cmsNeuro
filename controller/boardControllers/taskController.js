@@ -82,8 +82,8 @@ exports.createTask = async (req, res, next) => {
 
 exports.getAllTasks = async (req, res, next) => {
   try {
+    console.log(req.params.topic_id);
     const topic_id = req.params.topic_id;
-    console.log(req.params);
     const tasks = await getAllTasks(topic_id);
 
     res.status(200).json({

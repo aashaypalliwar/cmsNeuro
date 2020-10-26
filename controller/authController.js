@@ -11,12 +11,24 @@ const {
 //utils
 const AppError = require("../utils/appError");
 
-// const {JWT_COOKIE_EXPIRES_IN} = require("../utils/config");
+const { JWT_COOKIE_EXPIRES_IN, NODE_ENV } = require("../utils/config");
 
 const createSendToken = async (user, statusCode, res) => {
   try {
     // console.log(user);
     const token = signToken(user.id);
+    // console.log(token);
+    const cookieOptions = {
+      expires: new Date(
+        Date.now() + JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+      ),
+      httpOnly: true,
+    };
+    if (NODE_ENV == "production") {
+      cookieOptions.secure = true;
+    }
+    res.cookie("jwt", token, cookieOptions);
+
     res.status(statusCode).json({
       status: "success",
       token,
@@ -24,6 +36,7 @@ const createSendToken = async (user, statusCode, res) => {
         user,
       },
     });
+    // console.log(res);
   } catch (error) {
     console.log(error);
   }
@@ -31,6 +44,8 @@ const createSendToken = async (user, statusCode, res) => {
 
 exports.protect = async (req, res, next) => {
   try {
+    // console.log(req.cookies);
+    // console.log(req.headers);
     let token;
     if (
       req.headers.authorization &&
@@ -118,9 +133,10 @@ exports.forgotPassword = async (req, res, next) => {
 exports.resetPassword = async (req, res, next) => {
   try {
     //take token and newPassword as input
-    const { token, newPassword } = req.body;
+    const token = req.body.token;
+    const password = req.body.password;
 
-    const user = await resetPassword(token, newPassword, next);
+    const user = await resetPassword(token, password, next);
 
     createSendToken(user, 200, res);
   } catch (err) {

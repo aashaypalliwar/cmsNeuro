@@ -19,19 +19,24 @@ module.exports.setupSocket = (server) => {
     }
   }).on("connection", (socket) => {
     // Connection now authenticated to receive further events
+    console.log("Socket connected!")
     socket.on("join", async (room) => {
       socket.join(room);
       io.emit("roomJoined", room); //optional----can be used if required
     });
 
     socket.on("message", async (data) => {
+      console.log("Mesage!")
       const { taskId, authorId, comment } = data;
       const timestamp = Date.now();
       const queryParms = [comment, timestamp, authorId, taskId];
-      const newComment = await db.query(
+      await db.query(
         `INSERT INTO comments (text,timestamp,user_id,task_id) VALUES (?,?,?,?)`,
         queryParms
       );
+      const newComment = {
+        taskId,authorId,comment
+      }
       io.in(taskId).emit("newComment", newComment); //for now, roomName=taskId
     });
   });
