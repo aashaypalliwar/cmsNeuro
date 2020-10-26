@@ -34,7 +34,7 @@ router
 
 //get task, archive task and toggle status of assignment
 router
-  .route("/:task_id")
+  .route("/:topic_id/tasks/:task_id")
   .get(getTask)
   .delete(
     //restrictTo("superAdmin", "admin"),
@@ -48,14 +48,14 @@ router
 //tags  add and remove tags
 
 router
-  .route("/:task_id/tags")
+  .route("/:topic_id/tasks/:task_id/tags")
   .post(addTagToTask)
   .delete(removeTagfromTask);
 
 //create , get and remove assignments
 
 router
-  .route("/:task_id/assignments")
+  .route("/:topic_id/tasks/:task_id/assignments")
   .get(getAssignments)
   .post(
     restrictTo("superAdmin", "admin"),
@@ -69,7 +69,7 @@ router
 //request assignment to tasks, accept requests
 
 router
-  .route("/:task_id/assignmentRequest")
+  .route("/:topic_id/tasks/:task_id/assignmentRequest")
   .post(requestAssignment)
   .patch(
     restrictTo("superAdmin", "admin"),
@@ -79,7 +79,7 @@ router
 //get paginated comments------offset is the index after which to get the next ${limit} comments
 //if offset is not provided, it will get the first ${limit} comments
 router
-  .route("/:task_id/comments/:limit/:offset")
+  .route("/:topic_id/tasks/:task_id/comments/:limit")
   .get(getCommentsByTask);
 
 module.exports = router;

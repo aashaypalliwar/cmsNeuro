@@ -117,8 +117,9 @@ exports.fetchPointHistoryofUser = async (user_id, next) => {
   try {
     const points = await db.query(
       // `SELECT *, name FROM allotments INNER JOIN allotments ON allotments.awarded_by=users.id WHERE user_id='${user_id}'`
-      `SELECT *, name FROM allotments INNER JOIN users ON users.id=allotments.awarded_by  WHERE user_id='${user_id}'`
+      `SELECT *, name FROM allotments INNER JOIN users ON users.id=allotments.awarded_by  WHERE user_id='${user_id}' ORDER BY awarded_at DESC`
     );
+    console.log(points.data);
     if (points.data.length) {
       const allotedPoints = [];
       points.data.forEach((point) => allotedPoints.push(point));
@@ -142,6 +143,7 @@ exports.fetchAllUsers = async (next) => {
 
 exports.awardPoints = async (data, next) => {
   try {
+    console.log(data);
     const user = await db.query(
       `SELECT * FROM users WHERE id='${data.user_id}'`
     );
@@ -162,7 +164,7 @@ exports.awardPoints = async (data, next) => {
       data.timestamp,
     ];
     await db.query(
-      `INSERT INTO allotments (user_id, awarded_by, points_awarded, reason , timestamp) VALUES (?,?,?,?,?)`,
+      `INSERT INTO allotments (user_id, awarded_by, points_awarded, reason , awarded_at) VALUES (?,?,?,?,?)`,
       queryParams
     );
   } catch (err) {

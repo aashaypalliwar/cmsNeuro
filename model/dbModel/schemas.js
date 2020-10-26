@@ -14,7 +14,7 @@ module.exports.userSchema = {
     password  TEXT NOT NULL,
     reset_token	TEXT,
     reset_token_expires_at INTEGER,
-    bio TEXT`
+    bio TEXT`,
 };
 
 module.exports.topicSchema = {
@@ -25,7 +25,7 @@ module.exports.topicSchema = {
     scope TEXT NOT NULL,
     important BIT DEFAULT 0,
     isArchived BIT DEFAULT 0,
-    archived_at INTEGER`
+    archived_at INTEGER`,
 };
 
 module.exports.taskSchema = {
@@ -43,7 +43,7 @@ module.exports.taskSchema = {
     archived_at INTEGER,
     FOREIGN KEY(user_id) REFERENCES users(id),
     FOREIGN KEY(topic_id) REFERENCES topics(id)
-   `
+   `,
 };
 
 module.exports.tagSchema = {
@@ -52,7 +52,7 @@ module.exports.tagSchema = {
     tag TEXT NOT NULL,
     timestamp INTEGER NOT NULL,
     task_id INTEGER,
-    FOREIGN KEY(task_id) REFERENCES tasks(id)`
+    FOREIGN KEY(task_id) REFERENCES tasks(id)`,
 };
 
 module.exports.commentSchema = {
@@ -63,7 +63,7 @@ module.exports.commentSchema = {
     user_id INTEGER NOT NULL,
     task_id INTEGER NOT NULL,
     FOREIGN KEY(user_id) REFERENCES users(id),
-    FOREIGN KEY(task_id) REFERENCES tasks(id)`
+    FOREIGN KEY(task_id) REFERENCES tasks(id)`,
 };
 
 module.exports.assignmentRequestSchema = {
@@ -75,7 +75,7 @@ module.exports.assignmentRequestSchema = {
     reviewed BIT DEFAULT 0,
     accepted BIT DEFAULT 0,
     FOREIGN KEY(task_id) REFERENCES tasks(id),
-    FOREIGN KEY(user_id) REFERENCES users(id)`
+    FOREIGN KEY(user_id) REFERENCES users(id)`,
 };
 
 module.exports.assignmentSchema = {
@@ -85,7 +85,7 @@ module.exports.assignmentSchema = {
     user_id INTEGER NOT NULL,
     timestamp INTEGER NOT NULL,
     FOREIGN KEY(task_id) REFERENCES tasks(id),
-    FOREIGN KEY(user_id) REFERENCES users(id)`
+    FOREIGN KEY(user_id) REFERENCES users(id)`,
 };
 
 module.exports.announcementSchema = {
@@ -97,7 +97,7 @@ module.exports.announcementSchema = {
     lastEdit  INTEGER,
     isArchived INTEGER DEFAULT 0,
     archived_at INTEGER,
-    FOREIGN KEY(user_id) REFERENCES users(id)`
+    FOREIGN KEY(user_id) REFERENCES users(id)`,
 };
 
 module.exports.accessSchema = {
@@ -106,7 +106,7 @@ module.exports.accessSchema = {
     topic_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
     FOREIGN KEY(topic_id) REFERENCES topics(id),
-    FOREIGN KEY(user_id) REFERENCES users(id)`
+    FOREIGN KEY(user_id) REFERENCES users(id)`,
 };
 
 module.exports.allotmentSchema = {
@@ -114,12 +114,12 @@ module.exports.allotmentSchema = {
   tableSchema: `id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     awarded_by INTEGER NOT NULL,
-    timestamp INTEGER NOT NULL,
-    points INTEGER NOT NULL,
+    awarded_at INTEGER NOT NULL,
+    points_awarded INTEGER NOT NULL,
     reason TEXT NOT NULL,
     FOREIGN KEY(user_id) REFERENCES users(id),
     FOREIGN KEY(awarded_by) REFERENCES users(id)
-    `
+    `,
 };
 
 //points      awarded_by      reason    Awarded at

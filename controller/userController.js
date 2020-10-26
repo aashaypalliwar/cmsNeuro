@@ -152,11 +152,12 @@ exports.getAllUsers = async (req, res, next) => {
 
 exports.awardPoints = async (req, res, next) => {
   try {
+    console.log(req.body);
     const pointData = {
       user_id: req.params.id,
       awarded_by: req.user.id,
       reason: req.body.reason,
-      points: req.body.points,
+      points: parseInt(req.body.points),
       timestamp: Date.now(),
     };
 
