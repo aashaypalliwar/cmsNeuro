@@ -103,6 +103,11 @@ exports.getOwnProfile = async (req, res, next) => {
     const id = req.user.id;
     const user = await fetchOneUser(id, next);
 
+    if (user.tracking_points) {
+      const pointHistory = await fetchPointHistoryofUser(id, next);
+      user.allotments = pointHistory;
+    }
+
     res.status(200).json({
       user,
       status: "success",

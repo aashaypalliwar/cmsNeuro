@@ -19,7 +19,12 @@ const router = express.Router();
 router.post("/addUsers", protect, restrictTo("superAdmin"), bulkSignup);
 
 //Get All Users
-router.get("/allUsers", protect, restrictTo("superAdmin"), getAllUsers);
+router.get(
+  "/allUsers",
+  protect,
+  restrictTo("admin", "superAdmin"),
+  getAllUsers
+);
 
 //GET OWN PROFILE
 router.get("/profile", protect, getOwnProfile);
