@@ -57,7 +57,7 @@ deleteArchiveCron.start();
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/board/leaderboard", leaderboardRouter);
-app.use("/api/v1/board/topics/", taskRouter);
+app.use("/api/v1/board/topics", taskRouter);
 app.use("/api/v1/board/topics", topicRouter);
 app.use("/api/v1/board/announcements", announcementRouter);
 

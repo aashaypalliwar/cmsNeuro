@@ -27,17 +27,17 @@ module.exports.setupSocket = (server) => {
 
     socket.on("message", async (data) => {
       console.log("Mesage!")
-      const { taskId, authorId, comment } = data;
+      const { task_id, user_id, text} = data;
       const timestamp = Date.now();
-      const queryParms = [comment, timestamp, authorId, taskId];
+      const queryParms = [text, timestamp, user_id, task_id];
       await db.query(
         `INSERT INTO comments (text,timestamp,user_id,task_id) VALUES (?,?,?,?)`,
         queryParms
       );
       const newComment = {
-        taskId,authorId,comment
+        user_id,task_id,text,timestamp
       }
-      io.in(taskId).emit("newComment", newComment); //for now, roomName=taskId
+      io.in(task_id).emit("newComment", newComment); //for now, roomName=taskId
     });
   });
 };

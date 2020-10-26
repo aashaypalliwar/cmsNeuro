@@ -342,14 +342,15 @@ exports.removeTag = async (tag_id, next) => {
   }
 };
 
-exports.getComments = async (id, limit, offset) => {
+exports.getComments = async (id, limit) => {
   try {
-    const task = await db.query(`SELECT * FROM tasks WHERE id=${id}`);
-    if (!task.data.length) return null;
-
+    //const task = await db.query(`SELECT * FROM tasks WHERE id=${id}`);
+    //if (!task.data.length) return null;
+    console.log("logic stra")
     const comments = await db.query(
-      `SELECT * FROM comments WHERE task_id=${id} LIMIT ${limit} OFFSET ${offset}`
+      `SELECT * FROM comments WHERE task_id=${id} LIMIT ${limit}`
     );
+    console.log("logic end")
     return comments;
   } catch (err) {
     throw err;

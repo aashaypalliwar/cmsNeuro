@@ -271,11 +271,12 @@ exports.getCommentsByTask = async (req, res, next) => {
   try {
     const limit = req.params.limit;
     const id = req.params.task_id;
-    let offset = null;
-    if (req.params.offset) offset = req.params.offset;
-    const comments = await getComments(id, limit, offset);
-    if (limit > 0 && comments === null)
-      return next(new AppError("Task not found", 404));
+    
+    console.log("controller stra")
+    const comments = await getComments(id, limit);
+    console.log("controller end")
+    //if (limit > 0 && comments === null)
+      //return next(new AppError("Task not found", 404));
     res.status(200).json({
       comments,
       status: "success",
