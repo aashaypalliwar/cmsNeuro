@@ -37,11 +37,11 @@ router
   .route("/:topic_id/tasks/:task_id")
   .get(getTask)
   .delete(
-    //restrictTo("superAdmin", "admin"),
+    restrictTo("superAdmin", "admin"),
     deleteTask
   )
   .patch(
-    //restrictTo("superAdmin", "admin"),
+    restrictTo("superAdmin", "admin"),
     changeAssignableStatus
   );
 
