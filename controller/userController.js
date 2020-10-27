@@ -120,7 +120,7 @@ exports.getOwnProfile = async (req, res, next) => {
 exports.getOneUser = async (req, res, next) => {
   try {
     const id = req.params.id;
-    console.log(id);
+    // console.log(id);
     let user = await fetchOneUser(id, next);
     if (!user) throw new AppError("No user found with this id", 404);
 

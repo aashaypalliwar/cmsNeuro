@@ -119,7 +119,6 @@ exports.fetchPointHistoryofUser = async (user_id, next) => {
       // `SELECT *, name FROM allotments INNER JOIN allotments ON allotments.awarded_by=users.id WHERE user_id='${user_id}'`
       `SELECT *, name FROM allotments INNER JOIN users ON users.id=allotments.awarded_by  WHERE user_id='${user_id}' ORDER BY awarded_at DESC`
     );
-    console.log(points.data);
     if (points.data.length) {
       const allotedPoints = [];
       points.data.forEach((point) => allotedPoints.push(point));
