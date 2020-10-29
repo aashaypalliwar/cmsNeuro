@@ -10,6 +10,7 @@ const {
   awardPoints,
   addBio,
   bulkSignup,
+  singleSignup,
 } = require("../controller/userController");
 const { protect, restrictTo } = require("../controller/authController");
 
@@ -17,6 +18,8 @@ const router = express.Router();
 
 //ADD USER(S) WITH ROLE AND DESIGNATION
 router.post("/addUsers", protect, restrictTo("superAdmin"), bulkSignup);
+
+router.post("/addUser", protect, restrictTo("superAdmin"), singleSignup);
 
 //Get All Users
 router.get(
