@@ -9,6 +9,7 @@ const {
   fetchAllUsers,
   awardPoints,
   bulkSignup,
+  singleSignUp,
 } = require("../model/businessLogic/userLogic");
 const AppError = require("../utils/appError");
 
@@ -183,6 +184,25 @@ exports.bulkSignup = async (req, res, next) => {
     res.status(200).json({
       status: "success",
       message: "Users successfully signed up",
+    });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+exports.singleSignup = async (req, res, next) => {
+  try {
+    const data = {
+      name: req.body.name,
+      email: req.body.email,
+      role: req.body.role,
+      designation: req.body.designation,
+    };
+
+    await singleSignUp(data, next);
+    res.status(200).json({
+      status: "success",
+      message: "User successfully signed up",
     });
   } catch (err) {
     return next(err);

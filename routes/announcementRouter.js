@@ -5,13 +5,13 @@ const { protect, restrictTo } = require("./../controller/authController");
 const {getAllAnnouncements, createAnnouncement, archiveAnnouncement, updateAnnouncement} 
       = require("./../controller/boardControllers/announcementController");
 
-// router.use(protect);
+router.use(protect);
 
 //create an announcement, get all announcements
 router
   .route("/")
   .post(
-    //restrictTo('superAdmin','admin')
+    restrictTo('superAdmin','admin'),
     createAnnouncement
   )
   .get(getAllAnnouncements);
@@ -20,14 +20,14 @@ router
 router
     .route('/:announcement_id/archive')
     .delete(
-//         authController.restrictTo('admin'),
-           archiveAnnouncement
+          restrictTo('admin'),
+          archiveAnnouncement
      );
 //updating an announcement     
 router
     .route('/:announcement_id')
     .patch(
-        // authController.restrictTo('admin'), 
+          restrictTo('admin'), 
           updateAnnouncement
         )
 

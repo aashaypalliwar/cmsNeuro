@@ -207,3 +207,42 @@ exports.bulkSignup = async (emails, next) => {
     throw err;
   }
 };
+
+exports.singleSignUp = async (data, next) => {
+  try {
+    //Generate a random OTP and hash it using bcrpyt
+    const OTP = String(Math.floor(Math.random() * 10000 + 1));
+    const tempPassword = await bcrypt.hash(OTP, 12);
+    const timestamp = Date.now(); //timestamp
+    const queryParams = [
+      data.name,
+      data.email,
+      data.role,
+      timestamp,
+      tempPassword,
+      data.designation,
+    ];
+
+    //insert into database
+    await db.query(
+      `INSERT INTO users (name, email, role,timestamp, password, designation) VALUES (?, ?, ?,?,?,?)`,
+      queryParams
+    );
+    //Message
+    const message = `Dear ${data.name}, \n You are added to the Neuromancers Society\n The tasks and leaderboard will be on this temp.com.\n You are assigned Role and Designation of ${data.role} and ${data.designation} respectively.\n Login to the page using your college email id and this OTP, change the password after this login.\n \n ${OTP} `;
+    //sendEmail
+    try {
+      sendEmail({
+        email: data.email,
+        subject: "Welcome to Neuromancers",
+        message,
+      });
+    } catch (err) {
+      console.log(err.message);
+      throw new AppError("There was an error sending email", 500);
+    }
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
