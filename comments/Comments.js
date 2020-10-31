@@ -39,6 +39,13 @@ module.exports.setupSocket = (server) => {
       }
       io.in(task_id).emit("newComment", newComment); //for now, roomName=taskId
     });
+
+    socket.on("typing", (data) => {
+      if(data.typing==true)
+         io.in(data.task_id).emit('display', data)
+      else
+         io.in(data.task_id).emit('display', data)
+    })
   });
 };
 
