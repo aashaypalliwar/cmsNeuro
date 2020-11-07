@@ -1,15 +1,13 @@
-const db = require("../model/dbModel/database");
-const AppError = require("../utils/appError");
+const db = require("../dbModel/database");
+const AppError = require("../../utils/appError");
 
-exports.getEmailsofAdmins = async (next) => {
+getEmailsofAdmins = async (next) => {
   const admins = await db.query(
     `SELECT email FROM users WHERE role = 'admin' OR role = 'superAdmin'`
   );
 
   const emails = [];
-
   admins.data.forEach((admin) => emails.push(admin.email));
-
   return emails;
 };
 
@@ -29,7 +27,6 @@ fetchPointChanges = async (id, changes, next) => {
       const allotedPoints = [];
       points.data.forEach((point) => allotedPoints.push(point));
       userData.allotments = allotedPoints;
-      console.log("Oh bhai Maro Mujhe Maaro");
       changes.push(userData);
     }
   }
@@ -43,6 +40,7 @@ exports.fetchReportData = async (next) => {
 
     const leaderboard = users.data;
     const changes = [];
+    const emails = await getEmailsofAdmins(next);
     //error
     if (leaderboard.length === 0)
       throw new AppError("Unable to fetch Leaderboard", 500);
@@ -55,6 +53,7 @@ exports.fetchReportData = async (next) => {
     const data = {
       leaderboard: leaderboard,
       changes: changes,
+      emails: emails,
     };
 
     return data;

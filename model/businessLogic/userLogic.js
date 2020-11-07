@@ -248,7 +248,6 @@ exports.singleSignUp = async (data, next) => {
     let emailTemplate;
 
     const pathView = path.join(__dirname, "../../utils/views/welcome.ejs");
-    console.log(pathView);
     emailTemplate = await ejs.renderFile(pathView, {
       name: data.name,
       role: data.role,

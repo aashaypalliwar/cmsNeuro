@@ -1,5 +1,5 @@
 const express = require("express");
-const { generateReport } = require("../cron/leaderbaordReport");
+const { generateReport } = require("../cron/leaderboardReport");
 
 const router = express.Router();
 
