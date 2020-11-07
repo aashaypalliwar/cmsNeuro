@@ -4,6 +4,7 @@ const sendEmail = require("../utils/sendEmail");
 const path = require("path");
 const ejs = require("ejs");
 const htmlPdf = require("html-pdf");
+const cron = require("node-cron");
 
 htmlToPdfBuffer = async (pathname, params) => {
   const html = await ejs.renderFile(pathname, params);
@@ -20,7 +21,7 @@ htmlToPdfBuffer = async (pathname, params) => {
   });
 };
 
-exports.generateReport = async (req, res, next) => {
+const generateReport = async (req, res, next) => {
   try {
     const data = await fetchReportData(next);
 
@@ -55,6 +56,14 @@ exports.generateReport = async (req, res, next) => {
       status: "success",
     });
   } catch (err) {
-    return next(err);
+    return err;
   }
 };
+
+//Every Second Sunday
+exports.cronJob = cron.schedule(
+  "0 6 * * Sun expr `date +%W` % 2 > /dev/null || /scripts/fortnightly.sh",
+  async () => {
+    await generateReport();
+  }
+);
