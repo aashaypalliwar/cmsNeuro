@@ -2,6 +2,9 @@ const AppError = require("../../utils/appError");
 const db = require("../dbModel/database");
 const sendEmail = require("../../utils/sendEmail");
 const bcrypt = require("bcryptjs");
+const path = require("path");
+const ejs = require("ejs");
+
 exports.blacklist = async (id, next) => {
   try {
     const user = await db.query(`SELECT * FROM users WHERE id='${id}'`);
@@ -13,19 +16,23 @@ exports.blacklist = async (id, next) => {
         user.data[0].blacklisted ? 0 : 1
       } WHERE id='${user.data[0].id}'`
     );
-
+    const change = user.data[0].blacklisted ? "whitelisted." : "blacklisted.";
     const email = user.data[0].email;
-    const message =
-      "You have been " +
-      (user.data[0].blacklisted ? "whitelisted." : "blacklisted.");
+    const message = `Dear ${user.data[0].name}!,\n You have been ${change} from CMS Neuromancers, from one of our Admins.\n Regards\n CMS Neuromancers`;
+
+    const pathView = path.join(__dirname, "../../utils/views/blacklisted.ejs");
+
+    const emailTemplate = await ejs.renderFile(pathView, {
+      name: user.data[0].name,
+      action: change.slice(0, -1),
+    });
 
     try {
       await sendEmail({
         email,
-        subject:
-          "You have been " +
-          (user.data[0].blacklisted ? "whitelisted." : "blacklisted."),
+        subject: change.toUpperCase(),
         message,
+        html: emailTemplate,
       });
     } catch (err) {
       throw new AppError("Error in sending mail!", 500);
@@ -191,7 +198,7 @@ exports.bulkSignup = async (emails, next) => {
       //Message
       const message = `Dear ${tempName}, \n You are added to the Neuromancers Society\n The tasks and leaderboard will be on this temp.com.\n Login to the page using your college email id and this OTP, change the password after this login.\n \n ${OTP} `;
       //sendEmail
-      console.log(message);
+
       try {
         sendEmail({
           email,
@@ -229,13 +236,32 @@ exports.singleSignUp = async (data, next) => {
       queryParams
     );
     //Message
-    const message = `Dear ${data.name}, \n You are added to the Neuromancers Society\n The tasks and leaderboard will be on this temp.com.\n You are assigned Role and Designation of ${data.role} and ${data.designation} respectively.\n Login to the page using your college email id and this OTP, change the password after this login.\n \n ${OTP} `;
+    const message = `Dear ${
+      data.name
+    }, \n You are added to the Neuromancers Society\n The tasks and leaderboard will be on this temp.com.\n You are assigned Role and Designation of ${
+      data.role.charAt(0).toUpperCase() + data.role.slice(1)
+    } and ${
+      data.designation
+    } respectively.\n Login to the page using your college email id and this OTP, change the password after this login.\n \n ${OTP} `;
     //sendEmail
+
+    let emailTemplate;
+
+    const pathView = path.join(__dirname, "../../utils/views/welcome.ejs");
+    console.log(pathView);
+    emailTemplate = await ejs.renderFile(pathView, {
+      name: data.name,
+      role: data.role,
+      designation: data.designation,
+      OTP: OTP,
+    });
+
     try {
       sendEmail({
         email: data.email,
         subject: "Welcome to Neuromancers",
         message,
+        html: emailTemplate,
       });
     } catch (err) {
       console.log(err.message);

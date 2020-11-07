@@ -34,6 +34,7 @@ app.use(
 );
 
 // app.options("*", cors());
+app.set("view engine", "ejs");
 
 app.use(helmet());
 
