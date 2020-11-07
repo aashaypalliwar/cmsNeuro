@@ -24,7 +24,7 @@ exports.generateReport = async (req, res, next) => {
   try {
     const data = await fetchReportData(next);
 
-    const pathView = path.join(__dirname, "../../utils/views/leaderboard.ejs");
+    const pathView = path.join(__dirname, "../utils/views/leaderboard.ejs");
     const htmlPathview = path.join(__dirname, "../utils/views/report.ejs");
     const emailTemplate = await ejs.renderFile(htmlPathview);
 
