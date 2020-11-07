@@ -74,7 +74,7 @@ exports.generateReport = async (req, res, next) => {
       border: "1.5px",
     };
     ejs.renderFile(
-      path.join(__dirname, "archivedTasksReportTemplate.ejs"),
+      path.join(__dirname, "../utils/views/archivedTasksReportTemplate.ejs"),
       {
         reportData: data,
       },
