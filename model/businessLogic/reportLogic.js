@@ -62,3 +62,67 @@ exports.fetchReportData = async (next) => {
     throw err;
   }
 };
+
+getArchivedTopics = async (next, topics) => {
+  const archivedTopics = await db.query(
+    `SELECT * FROM topics WHERE isArchived=1 AND ${Date.now()}-archived_at>604800000`
+  );
+  for (topic in archivedTopics.data) {
+    const Topic = {
+      topicData: archivedTopics.data[topic],
+      tasks: [],
+    };
+    const tasks = await db.query(
+      `SELECT * FROM tasks WHERE topic_id=${archivedTopics.data[topic].id}`
+    );
+    for (task in tasks.data) {
+      const Task = {
+        taskData: tasks.data[task],
+        comments: null,
+      };
+      if (tasks.data[task].important) {
+        const comments = await db.query(
+          `SELECT * FROM comments WHERE task_id=${tasks.data[task].id}`
+        );
+        Task.comments = comments.data;
+      }
+      topic.tasks.push(Task);
+    }
+    topics.push(Topic);
+  }
+};
+
+getIndependentArchivedTasks = async (next, independentTasks) => {
+  const independentArchivedTasks = await db.query(
+    `SELECT * FROM tasks WHERE isArchived=1 AND ${Date.now()}-archived_at>604800000`
+  );
+  for (task in independentArchivedTasks.data) {
+    const Task = {
+      taskData: independentArchivedTasks.data[task],
+      comments: null,
+    };
+    if (independentArchivedTasks.data[task].important) {
+      const comments = await db.query(
+        `SELECT * FROM comments WHERE task_id=${independentArchivedTasks.data[task].id}` //inner join query can be used to get username also
+      );
+      Task.comments = comments.data;
+    }
+    independentTasks.push(Task);
+  }
+};
+
+exports.fetchArchivedData = async (next) => {
+  const topics = [];
+  const independentTasks = [];
+  const emails = await getEmailsofAdmins(next);
+
+  await getArchivedTopics(next, topics);
+  await getIndependentArchivedTasks(next, independentTasks);
+
+  const data = {
+    reportData: { topics, independentTasks },
+    emails,
+  };
+
+  return data;
+};
