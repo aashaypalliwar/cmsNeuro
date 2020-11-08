@@ -1,8 +1,8 @@
 const express = require("express");
-const { generateReport } = require("../cron/leaderboardReport");
+const { archiveReport } = require("../controller/reportController");
 
 const router = express.Router();
 
-router.get("/", generateReport);
+router.get("/", archiveReport);
 
 module.exports = router;
