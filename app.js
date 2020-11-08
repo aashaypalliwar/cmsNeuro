@@ -17,10 +17,7 @@ const taskRouter = require("./routes/taskRouter");
 const authRouter = require("./routes/authRouter");
 const announcementRouter = require("./routes/announcementRouter");
 const leaderboardRouter = require("./routes/leaderboardRouter");
-const { sendFornightMemberReport, removeFile } = require("./cron/cronJobs");
-const {
-  generateReport,
-} = require("./controller/reportController/reportController");
+const reportRouter = require("./routes/reportRouter");
 
 const app = express();
 
@@ -34,6 +31,7 @@ app.use(
 );
 
 // app.options("*", cors());
+app.set("view engine", "ejs");
 
 app.use(helmet());
 
@@ -51,6 +49,7 @@ if (NODE_ENV !== "production") {
 }
 
 deleteArchiveCron.start();
+// cronJob.start();
 //ROUTES
 //"/api/auth"
 
@@ -60,6 +59,7 @@ app.use("/api/v1/board/leaderboard", leaderboardRouter);
 app.use("/api/v1/board/topics", taskRouter);
 app.use("/api/v1/board/topics", topicRouter);
 app.use("/api/v1/board/announcements", announcementRouter);
+app.use("/api/v1/reportTest", reportRouter);
 
 //client/build
 if (NODE_ENV === "production") {

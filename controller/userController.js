@@ -28,7 +28,7 @@ exports.blacklist = async (req, res, next) => {
       status: "success",
       message:
         "User " +
-        (updatedUser.blacklisted ? "blacklisted." : "whitelisted.") +
+        (updatedUser[0].blacklisted ? "blacklisted." : "whitelisted.") +
         " Mail sent.",
     });
   } catch (err) {
