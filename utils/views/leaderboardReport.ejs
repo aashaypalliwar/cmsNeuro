@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      #customers {
+        font-family: Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        align-items: center;
+        align-self: center;
+        width: 80%;
+      }
+
+      #customers td,
+      #customers th {
+        border: 1px solid #ddd;
+        padding: 8px;
+      }
+
+      #customers tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+
+      #customers th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color: #4caf50;
+        color: white;
+      }
+      .heading {
+        text-emphasis: none;
+        text-decoration: underline;
+        text-align: center;
+      }
+
+      #user {
+        font-family: Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        align-items: center;
+        align-self: center;
+        width: 75%;
+        border: 1px solid gray;
+      }
+      #user th {
+        padding-top: 5px;
+        padding-bottom: 5px;
+        text-align: center;
+        background-color: lightgreen;
+        color: black;
+      }
+      #user td {
+        border: 1px solid #ddd;
+        text-align: center;
+        color: black;
+      }
+
+      body {
+        margin-left: 5%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2 id="customers" class="heading">Current Leaderboard</h2>
+    <table id="customers">
+      <tr>
+        <th>Name</th>
+        <th>Points</th>
+        <th>Current Rank</th>
+        <th>Previous Rank</th>
+        <th>Change</th>
+      </tr>
+      <% if (entries.length > 0) { %> <% entries.forEach(entry => {%>
+      <tr style="width: 20%">
+        <td><%= entry.name %></td>
+        <td><%= entry.points %></td>
+        <td><%= entry.current_rank %></td>
+        <td><%= entry.old_rank %></td>
+        <td><%= entry.old_rank-entry.current_rank %></td>
+      </tr>
+      <% });%> <% }%>
+    </table>
+
+    <p style="page-break-before: always">&nbsp;</p>
+    <% if (users.length > 0) %>
+    <h3>Point Distribution Details</h3>
+    <%{ %> <% users.forEach(user => {%>
+
+    <h4 id="customers"><%= user.name %></h4>
+    <table id="user">
+      <tr>
+        <th><%= user.role %></th>
+        <th><%= user.email %></th>
+        <th>Rank: <%= user.current_rank %></th>
+        <th><%= user.points %> Points</th>
+      </tr>
+    </table>
+    <br />
+    <% if ( user.allotments.length >0 ) { %>
+    <table id="user">
+      <tr>
+        <th>Points Awarded</th>
+        <th>Awarded By</th>
+        <th>Date</th>
+        <th>Reason</th>
+      </tr>
+      <% user.allotments.forEach(point => { let date = new
+      Date(parseInt(point.awarded_at)).toString().split("GMT")[0]; %>
+      <tr>
+        <td><%= point.points_awarded %></td>
+        <td><%= point.name %></td>
+        <td><%= date %></td>
+        <td><%= point.reason %></td>
+      </tr>
+      <% });%> <% }%>
+    </table>
+
+    <% });%> <% }%>
+  </body>
+</html>
