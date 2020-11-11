@@ -2,6 +2,8 @@ const jwt = require(`jsonwebtoken`);
 const { promisify } = require("util");
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
+const path = require("path");
+const ejs = require("ejs");
 
 //utils
 const AppError = require("../../utils/appError");
@@ -151,11 +153,19 @@ exports.forgotPassword = async (email, next) => {
     const message = `Dear ${user.data[0].name}, \n Forgot your password? \n Paste this Code on your screen and enter your New Password.\n If you didn't forget your password, please ignore this email! \n${resetToken} \n Regards \n Secretary \n Neuromancers `;
 
     //if succesfull then goes back to main function else erase the reset token and expiry from database
+    const pathView = path.join(__dirname, "../../utils/views/forgot.ejs");
+    console.log(pathView);
+    const emailTemplate = await ejs.renderFile(pathView, {
+      name: user.data[0].name,
+      OTP: resetToken,
+    });
+
     try {
       await sendEmail({
         email,
         subject: "Your Password Reset Token {Valid for 10 min}",
         message,
+        html: emailTemplate,
       });
     } catch (err) {
       await db.query(
