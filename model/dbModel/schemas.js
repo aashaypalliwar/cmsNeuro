@@ -74,6 +74,7 @@ module.exports.assignmentRequestSchema = {
     timestamp INTEGER NOT NULL,
     reviewed BIT DEFAULT 0,
     accepted BIT DEFAULT 0,
+    email TEXT NOT NULL,
     FOREIGN KEY(task_id) REFERENCES tasks(id),
     FOREIGN KEY(user_id) REFERENCES users(id)`,
 };
@@ -84,6 +85,7 @@ module.exports.assignmentSchema = {
     task_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
     timestamp INTEGER NOT NULL,
+    email TEXT NOT NULL,
     FOREIGN KEY(task_id) REFERENCES tasks(id),
     FOREIGN KEY(user_id) REFERENCES users(id)`,
 };

@@ -1,7 +1,7 @@
 const {
   checkScope,
   fetchTask,
-  fetchTagsforTask,
+  fetchTags,
   getAssignments,
   createATask,
   getAllTasks,
@@ -15,6 +15,7 @@ const {
   acceptRequest,
   addTag,
   removeTag,
+  updateTaskTags,
   getComments,
 } = require("../../model/businessLogic/boardLogic/taskLogic");
 
@@ -40,11 +41,11 @@ exports.accessScope = () => {
 exports.getTask = async (req, res, next) => {
   try {
     const id = req.params.task_id;
-    const user_id = req.user.id;
+    //const user_id = req.user.id;
     let task;
 
     task = await fetchTask(id, next);
-    const tags = await fetchTagsforTask(id, next);
+    const tags = await fetchTags(id, next);
     const assignments = await getAssignments(id, next);
     task.tags = tags;
     task.assignments = assignments;
@@ -161,9 +162,12 @@ exports.getAssignments = async (req, res, next) => {
 exports.createAssignment = async (req, res, next) => {
   try {
     const task_id = req.params.task_id;
-    const user_ids = req.body.ids.split[","];
+    const user_emails = req.body.emails.split(",");
+    user_emails.forEach(email => 
+      email=email.trim()
+    );
 
-    await createAssignments(task_id, user_ids, next);
+    await createAssignments(task_id, user_emails, next);
 
     res.status(200).json({
       status: "success",
@@ -176,8 +180,9 @@ exports.createAssignment = async (req, res, next) => {
 
 exports.removeAssignment = async (req, res, next) => {
   try {
-    const assignment_id = req.body.assignment_id;
-    await removeAssignment(assignment_id, next);
+    const userEmail = req.body.email;
+    const taskId = req.params.task_id;
+    await removeAssignment(userEmail,taskId, next);
     res.status(200).json({
       status: "success",
       message: "Assignment removed successfully",
@@ -187,6 +192,7 @@ exports.removeAssignment = async (req, res, next) => {
   }
 };
 
+
 //assignment requests
 exports.getAssignmentRequests = async (req, res, next) => {
   try {
@@ -195,7 +201,7 @@ exports.getAssignmentRequests = async (req, res, next) => {
 
     res.status(200).json({
       status: "success",
-      count: requests.length,
+      //count: requests.length,
       requests,
     });
   } catch (err) {
@@ -205,10 +211,12 @@ exports.getAssignmentRequests = async (req, res, next) => {
 
 exports.requestAssignment = async (req, res, next) => {
   try {
-    const user_id = req.user.id;
+    //const user_id = req.user.id;
+    const user_id = 10;
     const task_id = req.params.task_id;
+    const userEmail = req.body.email
 
-    await requestAssignment(user_id, task_id, next);
+    await requestAssignment(user_id, task_id,userEmail, next);
 
     res.status(200).json({
       status: "success",
@@ -221,8 +229,9 @@ exports.requestAssignment = async (req, res, next) => {
 
 exports.acceptRequest = async (req, res, next) => {
   try {
-    const request_id = req.body.request_id;
-    await acceptRequest(request_id, next);
+    const email = req.body.email;
+    const taskId = req.params.task_id
+    await acceptRequest(taskId,email, next);
 
     res.status(200).json({
       status: "success",
@@ -264,6 +273,20 @@ exports.removeTagfromTask = async (req, res, next) => {
     return next(err);
   }
 };
+
+exports.updateTags = async (req, res, next) => {
+  try {
+    const tags = req.body.tags;
+    const taskId = req.params.task_id;
+    await updateTaskTags(tags, taskId);
+    res.status(200).json({
+      status: "success",
+      message: "Tags updated successfully",
+    });
+  }catch (err) {
+    return next(err);
+  }
+}
 
 //comments
 

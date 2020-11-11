@@ -51,7 +51,7 @@ exports.checkScope = async (userRole, user_id, topic_id, next) => {
 
 exports.fetchTask = async (id, next) => {
   try {
-    const task = await db.query(`SELECT * FROM users WHERE id=${id}`);
+    const task = await db.query(`SELECT * FROM tasks WHERE id=${id}`);
     if (!task.data.length) throw new AppError("Task not found", 404);
 
     return task.data[0];
@@ -197,22 +197,24 @@ exports.getAssignments = async (task_id, next) => {
   }
 };
 
-exports.createAssignments = async (task_id, user_ids, next) => {
+exports.createAssignments = async (task_id, user_emails, next) => {
   try {
     //find task
     const task = await db.query(`SELECT * FROM tasks WHERE id = ${task_id}`);
     if (!task.data.length) throw new AppError("Task does not exist", 404);
 
-    for (let user_id in user_ids) {
-      const user = await db.query(`SELECT * FROM users WHERE id=${user_id}`);
+    for (let email in user_emails) {
+      console.log(user_emails[email])
+      const user = await db.query(`SELECT * FROM users WHERE email='${user_emails[email]}'`);
+      console.log(user)
 
       if (!user.data.length)
         throw new AppError("the user or task does not exist", 404);
 
-      const queryParams = [task_id, user_id, Date.now()];
+      const queryParams = [task_id, user.data[0].id, Date.now(),user_emails[email]];
 
       await db.query(
-        `INSERT INTO assignments (task_id, user_id,timestamp) VALUES (?,?,?)`,
+        `INSERT INTO assignments (task_id, user_id,timestamp,email) VALUES (?,?,?,?)`,
         queryParams
       );
     }
@@ -222,9 +224,9 @@ exports.createAssignments = async (task_id, user_ids, next) => {
   }
 };
 
-exports.removeAssignment = async (assignment_id, next) => {
+exports.removeAssignment = async (userEmail,taskId, next) => {
   try {
-    await db.query(`DELETE FROM assignments WHERE id=${assignment_id}`);
+    await db.query(`DELETE FROM assignments WHERE ( task_id=${taskId} AND email='${userEmail}')`);
   } catch (err) {
     throw err;
   }
@@ -236,12 +238,12 @@ exports.removeAssignment = async (assignment_id, next) => {
 exports.getAssignmentRequests = async (task_id, next) => {
   try {
     const assignmentsRequests = await db.query(
-      `SELECT * FROM assignmentRequests where task_id = ${task_id}`
+      `SELECT * FROM assignmentRequests WHERE (task_id = ${task_id} AND reviewed=0)`
     );
 
     if (!assignmentsRequests.data.length) return null;
     //we wiil update them as reviewed
-    await db.query(`UPDATE assignmentRequests SET reviewed=1`);
+    //await db.query(`UPDATE assignmentRequests SET reviewed=1`);
 
     return assignmentsRequests.data;
   } catch (err) {
@@ -250,7 +252,7 @@ exports.getAssignmentRequests = async (task_id, next) => {
 };
 
 //reqest assignment
-exports.requestAssignment = async (user_id, task_id, next) => {
+exports.requestAssignment = async (user_id, task_id,userEmail, next) => {
   try {
     const task = await db.query(
       `SELECT * FROM tasks WHERE id= ${task_id} AND assignable=1`
@@ -259,9 +261,9 @@ exports.requestAssignment = async (user_id, task_id, next) => {
     if (!task.data.length)
       throw new AppError("Task does not exist or is not assignable", 404);
 
-    const queryParams = [task_id, user_id, Date.now()];
+    const queryParams = [task_id, user_id, userEmail, Date.now()];
     await db.query(
-      `INSERT INTO assignmentRequests (task_id, user_id, timestamp) VALUES (?, ?, ?);`,
+      `INSERT INTO assignmentRequests (task_id, user_id,email, timestamp) VALUES (?, ?, ?, ?);`,
       queryParams
     );
   } catch (err) {
@@ -270,27 +272,27 @@ exports.requestAssignment = async (user_id, task_id, next) => {
 };
 
 //accept request
-exports.acceptRequest = async (request_id, next) => {
+exports.acceptRequest = async (taskId,userEmail, next) => {
   try {
     //get the requst
     const request = await db.query(
-      `SELECT * FROM assignmentRequests WHERE id=${request_id}`
+      `SELECT * FROM assignmentRequests WHERE (email=${userEmail} AND task_id=${taskId})`
     );
 
     if (!request.data.length)
       throw new AppError("No request with the id exists", 404);
 
     const requestData = request.data[0];
-    const queryParams = [requestData.task_id, requestData.user_id, Date.now()];
+    const queryParams = [requestData.task_id, requestData.user_id,requestData.email, Date.now()];
 
     //add the request to assignment
     await db.query(
-      `INSERT INTO assignments (task_id, user_id, timestamp) VALUES (?,?,?)`,
+      `INSERT INTO assignments (task_id, user_id, email, timestamp) VALUES (?,?,?)`,
       queryParams
     );
     //keep it accepted
     await db.query(
-      `UPDATE assignmentRequests SET accepted=1 WHERE id=${request.id}`
+      `UPDATE assignmentRequests SET accepted=1, riviewed=1 WHERE (email=${userEmail} AND task_id=${taskId})`
     );
   } catch (err) {
     throw err;
@@ -341,6 +343,23 @@ exports.removeTag = async (tag_id, next) => {
     throw err;
   }
 };
+
+exports.updateTaskTags = async (tags, taskId) => {
+  try {
+    await db.query(`DELETE FROM tags WHERE task_id = ${taskId}`);
+    const timeStamp = Date.now();
+    tags.forEach(async tag => {
+      const queryParams = [taskId, tag, timeStamp];
+      await db.query(
+        `INSERT INTO tags (task_id, tag, timestamp) VALUES (?, ?, ?);`,
+        queryParams
+      );
+    
+    })
+  } catch (err) {
+    throw err;
+  }
+}
 
 exports.getComments = async (id, limit) => {
   try {
