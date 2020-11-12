@@ -5,7 +5,7 @@ const {
   getOneTopic,
   archiveOneTopic,
   updateOneTopic,
-  markTopicAsImportant
+  markTopicAsImportant,
 } = require("./../../model/businessLogic/boardLogic/topicLogic");
 const AppError = require("../../utils/appError");
 
@@ -16,7 +16,7 @@ exports.getAllTopics = async (req, res, next) => {
     res.status(200).json({
       status: "success",
       length: topics.length,
-      topics: topics.data
+      topics: topics.data,
     });
   } catch (err) {
     console.log(err);
@@ -30,6 +30,8 @@ exports.createTopic = async (req, res, next) => {
       heading: req.body.heading,
       description: req.body.description,
       scope: req.body.scope,
+      timestamp: Date.now(),
+      important: req.body.isImportant,
     };
 
     const Topic = await createOneTopic(newTopic, next);
@@ -61,7 +63,7 @@ exports.getATopic = async (req, res, next) => {
 exports.archiveTopic = async (req, res, next) => {
   try {
     const topicId = req.params.topicId;
-    await archiveOneTopic(topicId,next);
+    await archiveOneTopic(topicId, next);
     res.status(200).json({
       status: "success",
       message: "Archived successfully",
@@ -77,8 +79,9 @@ exports.updateTopic = async (req, res, next) => {
       topicId: req.params.topicId,
       newHeading: req.body.heading,
       newDescription: req.body.description,
-      scope: req.body.scope,
+      newScope: req.body.scope,
     };
+    console.log(req.body.scope);
 
     const updatedTopic = await updateOneTopic(topicDetails, next);
     res.status(200).json({
@@ -91,17 +94,17 @@ exports.updateTopic = async (req, res, next) => {
   }
 };
 
-exports.markTopicImportant = async(req,res,next) => {
+exports.markTopicImportant = async (req, res, next) => {
   try {
     const topicId = req.params.topicId;
-    const markedImportantMessage = await markTopicAsImportant(topicId,next);
-    
+    const markedImportantMessage = await markTopicAsImportant(topicId, next);
+
     res.status(200).json({
-      "status" : "success",
-      "message" : markedImportantMessage
-    })
+      status: "success",
+      message: markedImportantMessage,
+    });
   } catch (error) {
     console.log(error);
     throw error;
   }
-}
+};
