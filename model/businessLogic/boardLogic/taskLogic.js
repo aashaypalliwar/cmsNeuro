@@ -18,7 +18,7 @@ exports.checkScope = async (userRole, user_id, topic_id, next) => {
     else if (userRole === "admin") {
       if (scope === "superAdmin") return false;
       return true;
-    } else if (userRole === "member") {
+    } else if (userRole === "user") {
       if (scope === "member") return true;
       if (scope === "private") {
         const check = await db.query(
@@ -115,7 +115,7 @@ exports.createATask = async (task, next) => {
       `INSERT INTO tasks (heading, description,scope, user_id, topic_id,deadline) VALUES (?,?,?,?,?,?)`,
       queryParams
     );
-    return
+    return;
   } catch (err) {
     throw err;
   }
@@ -346,11 +346,11 @@ exports.getComments = async (id, limit) => {
   try {
     //const task = await db.query(`SELECT * FROM tasks WHERE id=${id}`);
     //if (!task.data.length) return null;
-    console.log("logic stra")
+    console.log("logic stra");
     const comments = await db.query(
       `SELECT * FROM comments WHERE task_id=${id} LIMIT ${limit}`
     );
-    console.log("logic end")
+    console.log("logic end");
     return comments;
   } catch (err) {
     throw err;

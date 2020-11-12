@@ -11,8 +11,10 @@ const AppError = require("../../utils/appError");
 
 exports.getAllTopics = async (req, res, next) => {
   try {
-    const topics = await fetchAllTopics(next);
-
+    const role = req.user.role;
+    const id = req.user.id;
+    const topics = await fetchAllTopics(role, id, next);
+    console.log(topics);
     res.status(200).json({
       status: "success",
       length: topics.length,
@@ -48,7 +50,9 @@ exports.createTopic = async (req, res, next) => {
 exports.getATopic = async (req, res, next) => {
   try {
     const topicId = req.params.topicId;
-    const topic = await getOneTopic(topicId, next);
+    const Role = req.user.role;
+    const user_id = req.user.id;
+    const topic = await getOneTopic(Role, topicId, user_id, next);
 
     res.status(201).json({
       status: "success",
