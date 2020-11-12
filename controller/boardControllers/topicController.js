@@ -80,6 +80,7 @@ exports.updateTopic = async (req, res, next) => {
       newHeading: req.body.heading,
       newDescription: req.body.description,
       newScope: req.body.scope,
+      newImportant: req.body.isImportant,
     };
     console.log(req.body.scope);
 
