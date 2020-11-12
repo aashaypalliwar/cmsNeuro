@@ -25,7 +25,9 @@ module.exports.topicSchema = {
     scope TEXT NOT NULL,
     important BIT DEFAULT 0,
     isArchived BIT DEFAULT 0,
-    archived_at INTEGER`,
+    archived_at INTEGER,
+    timestamp INTEGER NOT NULL,
+    updated_at INTEGER DEFAULT NULL`,
 };
 
 module.exports.taskSchema = {
