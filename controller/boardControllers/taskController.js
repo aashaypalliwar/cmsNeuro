@@ -100,7 +100,8 @@ exports.getAllTasks = async (req, res, next) => {
 exports.archiveTask = async (req, res, next) => {
   try {
     const task_id = req.params.task_id;
-    await archiveOneTask(task_id, next);
+    const isImportant = req.body.important
+    await archiveOneTask(task_id,isImportant, next);
 
     res.status(200).json({
       status: "success",

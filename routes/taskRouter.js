@@ -18,7 +18,8 @@ const {
   removeAssignment,
   getAssignments,
   createAssignment,
-  getAssignmentRequests
+  getAssignmentRequests,
+  archiveTask
 } = require("./../controller/boardControllers/taskController");
 
 //make sure that user is logged in
@@ -47,6 +48,13 @@ router
     changeAssignableStatus
   );
 
+  //archive
+  router
+  .route("/:topic_id/tasks/:task_id/archive")
+  .patch(
+    //restrictTo("superAdmin", "admin"),
+    archiveTask
+  );
 //tags  add and remove tags
 
 router

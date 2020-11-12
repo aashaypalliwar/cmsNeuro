@@ -149,7 +149,7 @@ exports.deleteTask = async (task_id, next) => {
 
 //Archive Task
 
-exports.archiveOneTask = async (task_id, next) => {
+exports.archiveOneTask = async (task_id,isImportant, next) => {
   try {
     const task = await db.query(`SELECT * FROM tasks WHERE id = ${task_id}`);
 
@@ -158,8 +158,7 @@ exports.archiveOneTask = async (task_id, next) => {
 
     //Send the comments to the superAdmins and Admins
     // to be implemented after comments setup
-
-    await db.query(`DELETE FROM tasks WHERE id = ${task_id}`);
+    await db.query(`UPDATE tasks SET isArchived = '1', important = '${isImportant}' WHERE id=${task_id}`)
   } catch (err) {
     throw err;
   }
@@ -175,7 +174,7 @@ exports.toggle = async (task_id, next) => {
     const toggle = task.data[0].assignable ? 0 : 1;
 
     await db.query(
-      `UPDATE tasks SET assignable ='${toggle}' WHERE id = ${task + id}`
+      `UPDATE tasks SET assignable ='${toggle}' WHERE id = ${task_id}`
     );
   } catch (err) {
     throw err;
@@ -255,7 +254,7 @@ exports.getAssignmentRequests = async (task_id, next) => {
 exports.requestAssignment = async (user_id, task_id,userEmail, next) => {
   try {
     const task = await db.query(
-      `SELECT * FROM tasks WHERE id= ${task_id} AND assignable=1`
+      `SELECT * FROM tasks WHERE id= ${task_id} AND assignable='1'`
     );
 
     if (!task.data.length)
@@ -278,6 +277,7 @@ exports.acceptRequest = async (taskId,userEmail, next) => {
     const request = await db.query(
       `SELECT * FROM assignmentRequests WHERE (email='${userEmail}' AND task_id=${taskId})`
     );
+    console.log(request.data[0])
 
     if (!request.data.length)
       throw new AppError("No request with the id exists", 404);
@@ -287,12 +287,12 @@ exports.acceptRequest = async (taskId,userEmail, next) => {
 
     //add the request to assignment
     await db.query(
-      `INSERT INTO assignments (task_id, user_id, email, timestamp) VALUES (?,?,?)`,
+      `INSERT INTO assignments (task_id, user_id, email, timestamp) VALUES (?,?,?, ?)`,
       queryParams
     );
     //keep it accepted
     await db.query(
-      `UPDATE assignmentRequests SET accepted=1, riviewed=1 WHERE (email='${userEmail}' AND task_id=${taskId})`
+      `UPDATE assignmentRequests SET accepted='1', reviewed='1' WHERE (email='${userEmail}' AND task_id=${taskId})`
     );
   } catch (err) {
     throw err;
