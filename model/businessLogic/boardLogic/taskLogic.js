@@ -276,7 +276,7 @@ exports.acceptRequest = async (taskId,userEmail, next) => {
   try {
     //get the requst
     const request = await db.query(
-      `SELECT * FROM assignmentRequests WHERE (email=${userEmail} AND task_id=${taskId})`
+      `SELECT * FROM assignmentRequests WHERE (email='${userEmail}' AND task_id=${taskId})`
     );
 
     if (!request.data.length)
@@ -292,7 +292,7 @@ exports.acceptRequest = async (taskId,userEmail, next) => {
     );
     //keep it accepted
     await db.query(
-      `UPDATE assignmentRequests SET accepted=1, riviewed=1 WHERE (email=${userEmail} AND task_id=${taskId})`
+      `UPDATE assignmentRequests SET accepted=1, riviewed=1 WHERE (email='${userEmail}' AND task_id=${taskId})`
     );
   } catch (err) {
     throw err;
@@ -365,11 +365,11 @@ exports.getComments = async (id, limit) => {
   try {
     //const task = await db.query(`SELECT * FROM tasks WHERE id=${id}`);
     //if (!task.data.length) return null;
-    console.log("logic stra")
+    //console.log("logic stra")
     const comments = await db.query(
       `SELECT * FROM comments WHERE task_id=${id} LIMIT ${limit}`
     );
-    console.log("logic end")
+    //console.log("logic end")
     return comments;
   } catch (err) {
     throw err;

@@ -295,9 +295,9 @@ exports.getCommentsByTask = async (req, res, next) => {
     const limit = req.params.limit;
     const id = req.params.task_id;
     
-    console.log("controller stra")
+    //console.log("controller stra")
     const comments = await getComments(id, limit);
-    console.log("controller end")
+    //console.log("controller end")
     //if (limit > 0 && comments === null)
       //return next(new AppError("Task not found", 404));
     res.status(200).json({
