@@ -11,12 +11,15 @@ const {
   changeAssignableStatus,
   addTagToTask,
   removeTagfromTask,
+  updateTags,
   requestAssignment,
   acceptRequest,
   getCommentsByTask,
   removeAssignment,
   getAssignments,
-  createAssignment
+  createAssignment,
+  getAssignmentRequests,
+  archiveTask
 } = require("./../controller/boardControllers/taskController");
 
 //make sure that user is logged in
@@ -45,6 +48,13 @@ router
     changeAssignableStatus
   );
 
+  //archive
+  router
+  .route("/:topic_id/tasks/:task_id/archive")
+  .patch(
+    //restrictTo("superAdmin", "admin"),
+    archiveTask
+  );
 //tags  add and remove tags
 
 router
@@ -52,17 +62,22 @@ router
   .post(addTagToTask)
   .delete(removeTagfromTask);
 
+  // new updateTags route
+router
+  .route("/:topic_id/tasks/:task_id/tags/update")
+  .post(updateTags)
+
 //create , get and remove assignments
 
 router
   .route("/:topic_id/tasks/:task_id/assignments")
   .get(getAssignments)
   .post(
-    restrictTo("superAdmin", "admin"),
+    //restrictTo("superAdmin", "admin"),
     createAssignment
   )
   .patch(
-    restrictTo("superAdmin", "admin"),
+    //restrictTo("superAdmin", "admin"),
     removeAssignment
   );
 
@@ -70,9 +85,10 @@ router
 
 router
   .route("/:topic_id/tasks/:task_id/assignmentRequest")
+  .get(getAssignmentRequests)
   .post(requestAssignment)
   .patch(
-    restrictTo("superAdmin", "admin"),
+   // restrictTo("superAdmin", "admin"),
     acceptRequest
   );
 
