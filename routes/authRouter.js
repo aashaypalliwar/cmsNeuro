@@ -5,11 +5,12 @@ const {
   forgotPassword,
   resetPassword,
   updatePassword,
+  logout,
 } = require("../controller/authController");
-const {fakeSignup} = require("./../script");
+const { fakeSignup } = require("./../script");
 const router = express.Router();
 
-router.post("/fake/signUp",fakeSignup);
+router.post("/fake/signUp", fakeSignup);
 //LOGIN
 router.post("/login", login);
 
@@ -21,5 +22,8 @@ router.patch("/resetPassword", resetPassword);
 
 //UPDATE PASSWORD
 router.patch("/updatePassword", protect, updatePassword);
+
+//LOG OUT
+router.post("/logout", logout);
 
 module.exports = router;
