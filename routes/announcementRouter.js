@@ -20,14 +20,14 @@ router
 router
     .route('/:announcement_id/archive')
     .delete(
-          restrictTo('admin'),
+          restrictTo('admin','superAdmin'),
           archiveAnnouncement
      );
 //updating an announcement     
 router
     .route('/:announcement_id')
     .patch(
-          restrictTo('admin'), 
+          restrictTo('admin','superAdmin'), 
           updateAnnouncement
         )
 
