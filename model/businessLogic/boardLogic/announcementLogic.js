@@ -7,7 +7,7 @@ exports.fetchAllAnnouncements = async (next) => {
     const announcements = await db.query(
       `SELECT * FROM announcements WHERE isArchived = 0`
     );
-    return announcements.data;
+    return announcements.data.sort((a,b) => (a.timestamp > b.timestamp) ? -1 : 1);
   } catch (err) {
     console.log(err);
     throw err;

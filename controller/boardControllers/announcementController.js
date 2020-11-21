@@ -35,10 +35,11 @@ exports.createAnnouncement = async (req, res, next) => {
     };
 
     const newAnnouncement = await createOneAnnouncement(announcement, next);
+    const announcements = await fetchAllAnnouncements(next);
     console.log(newAnnouncement);
     res.status(201).json({
       status: "success",
-      newAnnouncement,
+        announcements
     });
   } catch (err) {
     console.log(err);
