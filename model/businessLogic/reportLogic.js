@@ -65,7 +65,7 @@ exports.fetchReportData = async (next) => {
 
 getArchivedTopics = async (next, topics) => {
   const archivedTopics = await db.query(
-    `SELECT * FROM topics WHERE isArchived=1 AND ${Date.now()}-archived_at>604800000`
+    `SELECT * FROM topics WHERE isArchived=1 AND ${Date.now()}-archived_at>604800000 AND isImportant=1`
   );
   for (topic in archivedTopics.data) {
     const Topic = {

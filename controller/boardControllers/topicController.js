@@ -67,7 +67,8 @@ exports.getATopic = async (req, res, next) => {
 exports.archiveTopic = async (req, res, next) => {
   try {
     const topicId = req.params.topicId;
-    await archiveOneTopic(topicId, next);
+    const isImportant = req.body.isImportant;
+    await archiveOneTopic(topicId, isImportant, next);
     res.status(200).json({
       status: "success",
       message: "Archived successfully",

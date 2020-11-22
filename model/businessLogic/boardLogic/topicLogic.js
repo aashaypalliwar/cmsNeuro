@@ -40,26 +40,28 @@ exports.fetchAllTopics = async (userRole, user_id, next) => {
     console.log(userRole);
     if (userRole === "superAdmin") {
       console.log("super");
-      topics = await db.query(`SELECT * FROM topics`);
+      topics = await db.query(`SELECT * FROM topics WHERE isArchived=0`);
     } else if (userRole === "admin") {
       console.log("admin");
       topics = await db.query(
-        `SELECT * FROM topics WHERE scope='admin' OR scope='member'`
+        `SELECT * FROM topics WHERE (scope='admin' OR scope='member') AND isArchived=0`
       );
     } else if (userRole === "user") {
       console.log("member");
-      topics = await db.query(`SELECT * FROM topics WHERE scope='member'`);
+      topics = await db.query(
+        `SELECT * FROM topics WHERE scope='member' AND isArchived=0`
+      );
 
       const check = await db.query(
         `SELECT * FROM accesses WHERE user_id=${user_id}`
       );
 
       if (check.data.length) {
-        console.log("i have access");
+        // console.log("i have access");
         topics.data.push(check.data);
       }
     } else {
-      console.log("Hum hu idhar");
+      // console.log("Hum hu idhar");
     }
     console.log(topics);
     return topics;
@@ -108,12 +110,12 @@ exports.getOneTopic = async (userRole, topicId, userId, next) => {
   }
 };
 
-exports.archiveOneTopic = async (topicId, next) => {
+exports.archiveOneTopic = async (topicId, isImportant, next) => {
   try {
     const topic = await db.query(`SELECT * FROM topics WHERE id = ${topicId}`);
     if (!topic.data.length)
       throw new AppError("There is no topic with that Id", 404);
-    const toBeUpdated = `isArchived = 1, archived_at = ${Date.now()}`;
+    const toBeUpdated = `isArchived = 1, archived_at = ${Date.now()}, important='${isImportant}'`;
     db.query(`UPDATE topics SET ${toBeUpdated} WHERE id = ${topicId}`);
     return;
   } catch (err) {
