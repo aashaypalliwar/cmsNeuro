@@ -143,3 +143,25 @@ exports.resetPassword = async (req, res, next) => {
     return next(err);
   }
 };
+
+exports.logout = async (req, res, next) => {
+  try {
+    const token = "loggedout";
+    const cookieOptions = {
+      expires: new Date(
+        Date.now() + JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+      ),
+    };
+    if (NODE_ENV == "production") {
+      cookieOptions.secure = true;
+    }
+    res.cookie("jwt", token, cookieOptions);
+
+    res.status(200).json({
+      status: "success",
+      token,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};

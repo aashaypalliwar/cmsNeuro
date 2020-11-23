@@ -25,7 +25,7 @@ router.post("/addUser", protect, restrictTo("superAdmin"), singleSignup);
 router.get(
   "/allUsers",
   protect,
-  restrictTo("admin", "superAdmin"),
+  // restrictTo("admin", "superAdmin"),
   getAllUsers
 );
 
