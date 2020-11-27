@@ -9,6 +9,7 @@ const {
   getATopic,
   updateTopic,
   markTopicImportant,
+  addUsersToPrivateScope
 } = require("./../controller/boardControllers/topicController");
 
 router.use(protect);
@@ -37,5 +38,11 @@ router.route("/:topicId/important").patch(
   restrictTo("admin", "superAdmin"),
   markTopicImportant //marking as Important
 );
+
+router.route("/:topicId/private")
+  .post(
+  restrictTo("admin", "superAdmin"),
+  addUsersToPrivateScope
+)
 
 module.exports = router;

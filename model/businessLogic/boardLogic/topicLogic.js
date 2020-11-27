@@ -167,3 +167,27 @@ exports.markTopicAsImportant = async (topicId, next) => {
     throw error;
   }
 };
+
+exports.userToPrivateScope = async (topicId, userEmails, next) => {
+  try {
+    const topic = await db.query(`SELECT * FROM topics WHERE id = ${topicId}`);
+    if (!topic.data.length)
+      throw new AppError("There is no topic with that Id", 404);
+
+    userEmails.forEach(async email => {
+      const user = await db.query(`SELECT * FROM users WHERE email='${email}'`)
+      const queryParams = [
+        (topic_id = topicId),
+        (user_id = user.data[0].id)
+      ]
+      await db.query(
+        `INSERT INTO accesses (topic_id, user_id) VALUES (?,?)`, queryParams
+      )
+    }
+    );
+    return true;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}

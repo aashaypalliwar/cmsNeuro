@@ -6,6 +6,7 @@ const {
   archiveOneTopic,
   updateOneTopic,
   markTopicAsImportant,
+  userToPrivateScope
 } = require("./../../model/businessLogic/boardLogic/topicLogic");
 const AppError = require("../../utils/appError");
 
@@ -114,3 +115,18 @@ exports.markTopicImportant = async (req, res, next) => {
     throw error;
   }
 };
+
+exports.addUsersToPrivateScope = async (req, res, next) => {
+  try {
+    const topic_id = req.params.topicId;
+    const userEmails = req.body.emails;
+    const added=await userToPrivateScope(topic_id, userEmails, next);
+    res.status(200).json({
+      status: "success",
+      message: "Added users to private scope",
+    });
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}

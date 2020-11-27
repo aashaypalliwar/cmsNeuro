@@ -62,14 +62,13 @@ exports.getTask = async (req, res, next) => {
 exports.createTask = async (req, res, next) => {
   try {
     const task = {
-      //user_id: req.user.id,
-      user_id: 10,
+      user_id: req.user.id,
       heading: req.body.heading,
       description: req.body.description,
       topic_id: req.params.topic_id,
       deadline: req.body.deadline,
     };
-    console.log(task);
+    console.log(req.user);
     await createATask(task,next);
 
     res.status(201).json({
@@ -212,8 +211,7 @@ exports.getAssignmentRequests = async (req, res, next) => {
 
 exports.requestAssignment = async (req, res, next) => {
   try {
-    //const user_id = req.user.id;
-    const user_id = 10;
+    const user_id = req.user.id;
     const task_id = req.params.task_id;
     const userEmail = req.body.email
 
