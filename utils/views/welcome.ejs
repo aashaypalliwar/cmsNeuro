@@ -404,28 +404,40 @@ table {
                     <div class="heading-section heading-section-white">
                       <span class="subheading">Welcome</span>
                       <h2>CMS Neuromancers</h2>
-                      <p style="text-align: justify">
-                        Dear <%=name %>!, <br />
-                        You are added to the Neuromancers Society<br />
-                        The tasks and leaderboard will be on this temp.com.<br />
-                        You are assigned Role and Designation of <%= role%> and
-                        <%= designation%> respectively.<br />
-                        Login to the page using your college email id and this
-                        OTP, change the password after this login.
-                        <br/>
-                        <br/>
-                        <h2><%=OTP%></h2>
-
-                        <br />
-                        <br />
-                        Regards, <br />
-                        Secretary, Neuromancers IITBBS<br />
-                        <a href="mailto:secyprogsoc.sg@iitbbs.ac.in"
-                          ><span class="text"
-                            >secyprogsoc.sg@iitbbs.ac.in</span
-                          ></a>
-                      </p>
                     </div>
+                    <p
+                      style="
+                        text-align: justify !important;
+                        color: white !important;
+                      "
+                    >
+                      Dear <%=name %>!, <br />
+                      You are added to the Neuromancers Society<br />
+                      The tasks and leaderboard will be on
+                      <a href="https://cms-neuro.herokuapp.com/"
+                        ><span class="text">cms-neuro.herokuapp.com</span></a
+                      ><br />
+                      You are assigned Role and Designation of <%= role%> and
+                      <%= designation%> respectively.<br />
+                      Login to the page using your college email id and this
+                      OTP, change the password after this login.
+                      <br />
+                      <br />
+                    </p>
+
+                    <h1 style="color: white !important"><%=OTP%></h1>
+
+                    <br />
+                    <br />
+                    <p style="color: white !important">
+                      Regards, <br />
+                      Secretary, Neuromancers IITBBS<br />
+                      <a href="mailto:secyprogsoc.sg@iitbbs.ac.in"
+                        ><span class="text"
+                          >secyprogsoc.sg@iitbbs.ac.in</span
+                        ></a
+                      >
+                    </p>
                   </td>
                 </tr>
                 <!-- end: tr -->
