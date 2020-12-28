@@ -77,6 +77,7 @@ exports.checkCredentials = async (email, password, next) => {
     const currentUser = await db.query(
       `SELECT * FROM users WHERE email='${email}'`
     );
+    console.log(currentUser)
     //1) find the user
     if (!currentUser.data.length)
       throw new AppError("Your email or password is wrong.", 401);

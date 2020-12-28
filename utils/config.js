@@ -7,3 +7,4 @@ exports.NODE_ENV = process.env.NODE_ENV;
 exports.JWT_SECRET = process.env.JWT_SECRET;
 exports.JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
 exports.JWT_COOKIE_EXPIRES_IN = process.env.JWT_COOKIE_EXPIRES_IN;
+exports.DBURL = process.env.DBURL;
