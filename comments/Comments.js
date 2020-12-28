@@ -31,7 +31,7 @@ module.exports.setupSocket = (server) => {
       const timestamp = Date.now();
       const queryParms = [text, timestamp, user_id, task_id];
       await db.query(
-        `INSERT INTO comments (text,timestamp,user_id,task_id) VALUES (?,?,?,?)`,
+        `INSERT INTO comments (text,timestamp,user_id,task_id) VALUES ($1,$2,$3,$4)`,
         queryParms
       );
       const newComment = {

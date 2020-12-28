@@ -112,7 +112,7 @@ exports.createATask = async (task, next) => {
     ];
 
     await db.query(
-      `INSERT INTO tasks (heading, description,scope, user_id, topic_id,deadline) VALUES (?,?,?,?,?,?)`,
+      `INSERT INTO tasks (heading, description,scope, user_id, topic_id,deadline) VALUES ($1,$2,$3,$4,$5,$6)`,
       queryParams
     );
     return;
@@ -138,10 +138,10 @@ exports.deleteTask = async (task_id, next) => {
   try {
     //delete the task
     await db.query(`DELETE FROM tasks WHERE id = ${task_id}`);
-    //delete the tags
-    await db.query(`DELETE FROM tags WHERE task_id = ${task_id}`);
-    //delete the assignemts
-    await db.query(`DELETE FROM assignemts WHERE task_id=${task_id}`);
+    // //delete the tags
+    // await db.query(`DELETE FROM tags WHERE task_id = ${task_id}`);
+    // //delete the assignemts
+    // await db.query(`DELETE FROM assignemts WHERE task_id=${task_id}`);
   } catch (err) {
     throw err;
   }
@@ -158,7 +158,7 @@ exports.archiveOneTask = async (task_id,isImportant, next) => {
 
     //Send the comments to the superAdmins and Admins
     // to be implemented after comments setup
-    await db.query(`UPDATE tasks SET isArchived = '1', important = '${isImportant}' WHERE id=${task_id}`)
+    await db.query(`UPDATE tasks SET isArchived = 1, important = ${isImportant} WHERE id=${task_id}`)
   } catch (err) {
     throw err;
   }
@@ -174,7 +174,7 @@ exports.toggle = async (task_id, next) => {
     const toggle = task.data[0].assignable ? 0 : 1;
 
     await db.query(
-      `UPDATE tasks SET assignable ='${toggle}' WHERE id = ${task_id}`
+      `UPDATE tasks SET assignable =${toggle} WHERE id = ${task_id}`
     );
   } catch (err) {
     throw err;
@@ -213,7 +213,7 @@ exports.createAssignments = async (task_id, user_emails, next) => {
       const queryParams = [task_id, user.data[0].id, Date.now(),user_emails[email]];
 
       await db.query(
-        `INSERT INTO assignments (task_id, user_id,timestamp,email) VALUES (?,?,?,?)`,
+        `INSERT INTO assignments (task_id, user_id,timestamp,email) VALUES ($1,$2,$3,$4)`,
         queryParams
       );
     }
@@ -254,7 +254,7 @@ exports.getAssignmentRequests = async (task_id, next) => {
 exports.requestAssignment = async (user_id, task_id,userEmail, next) => {
   try {
     const task = await db.query(
-      `SELECT * FROM tasks WHERE id= ${task_id} AND assignable='1'`
+      `SELECT * FROM tasks WHERE id= ${task_id} AND assignable=1`
     );
 
     if (!task.data.length)
@@ -262,7 +262,7 @@ exports.requestAssignment = async (user_id, task_id,userEmail, next) => {
 
     const queryParams = [task_id, user_id, userEmail, Date.now()];
     await db.query(
-      `INSERT INTO assignmentRequests (task_id, user_id,email, timestamp) VALUES (?, ?, ?, ?);`,
+      `INSERT INTO assignmentRequests (task_id, user_id,email, timestamp) VALUES ($1,$2,$3,$4);`,
       queryParams
     );
   } catch (err) {
@@ -287,12 +287,12 @@ exports.acceptRequest = async (taskId,userEmail, next) => {
 
     //add the request to assignment
     await db.query(
-      `INSERT INTO assignments (task_id, user_id, email, timestamp) VALUES (?,?,?, ?)`,
+      `INSERT INTO assignments (task_id, user_id, email, timestamp) VALUES ($1,$2,$3,$4)`,
       queryParams
     );
     //keep it accepted
     await db.query(
-      `UPDATE assignmentRequests SET accepted='1', reviewed='1' WHERE (email='${userEmail}' AND task_id=${taskId})`
+      `UPDATE assignmentRequests SET accepted=1, reviewed=1 WHERE (email='${userEmail}' AND task_id=${taskId})`
     );
   } catch (err) {
     throw err;
@@ -324,7 +324,7 @@ exports.addTag = async (task_id, tagName, next) => {
 
     const queryParams = [task_id, tagName, Date.now()];
     await db.query(
-      `INSERT INTO tags (task_id, tag, timestamp) VALUES (?, ?, ?);`,
+      `INSERT INTO tags (task_id, tag, timestamp) VALUES ($1,$2,$3);`,
       queryParams
     );
   } catch (err) {
@@ -351,7 +351,7 @@ exports.updateTaskTags = async (tags, taskId) => {
     tags.forEach(async tag => {
       const queryParams = [taskId, tag, timeStamp];
       await db.query(
-        `INSERT INTO tags (task_id, tag, timestamp) VALUES (?, ?, ?);`,
+        `INSERT INTO tags (task_id, tag, timestamp) VALUES ($1,$2,$3);`,
         queryParams
       );
     

@@ -170,7 +170,7 @@ exports.awardPoints = async (data, next) => {
       data.timestamp,
     ];
     await db.query(
-      `INSERT INTO allotments (user_id, awarded_by, points_awarded, reason , awarded_at) VALUES (?,?,?,?,?)`,
+      `INSERT INTO allotments (user_id, awarded_by, points_awarded, reason , awarded_at) VALUES ($1,$2,$3,$4,$5)`,
       queryParams
     );
   } catch (err) {
@@ -192,7 +192,7 @@ exports.bulkSignup = async (emails, next) => {
 
       //insert into database
       await db.query(
-        `INSERT INTO users (name, email, role,timestamp, password) VALUES (?, ?, ?,?,?)`,
+        `INSERT INTO users (name, email, role,timestamp, password) VALUES ($1,$2,$3,$4,$5)`,
         queryParams
       );
       //Message
@@ -232,7 +232,7 @@ exports.singleSignUp = async (data, next) => {
 
     //insert into database
     await db.query(
-      `INSERT INTO users (name, email, role,timestamp, password, designation) VALUES (?, ?, ?,?,?,?)`,
+      `INSERT INTO users (name, email, role,timestamp, password, designation) VALUES ($1,$2,$3,$4,$5,$6)`,
       queryParams
     );
     //Message
