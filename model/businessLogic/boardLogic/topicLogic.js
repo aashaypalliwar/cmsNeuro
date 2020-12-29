@@ -82,7 +82,7 @@ exports.createOneTopic = async (newTopic, next) => {
     ];
 
     const topic = await db.query(
-      `INSERT INTO topics (heading, description, scope,timestamp,important) VALUES (?,?,?,?,?)`,
+      `INSERT INTO topics (heading, description, scope,timestamp,important) VALUES ($1,$2,$3,$4,$5,$6)`,
       queryParams
     );
     console.log(topic);
@@ -115,7 +115,7 @@ exports.archiveOneTopic = async (topicId, isImportant, next) => {
     const topic = await db.query(`SELECT * FROM topics WHERE id = ${topicId}`);
     if (!topic.data.length)
       throw new AppError("There is no topic with that Id", 404);
-    const toBeUpdated = `isArchived = 1, archived_at = ${Date.now()}, important='${isImportant}'`;
+    const toBeUpdated = `isArchived = 1, archived_at = ${Date.now()}, important=${isImportant}`;
     db.query(`UPDATE topics SET ${toBeUpdated} WHERE id = ${topicId}`);
     return;
   } catch (err) {
@@ -138,7 +138,7 @@ exports.updateOneTopic = async (topicDetails, next) => {
     const updateTime = Date.now();
     console.log(updateTime);
 
-    const sql = `UPDATE topics SET heading = '${newHeading}', description = '${newDescription}', scope = '${newScope}', updated_at= '${updateTime}', important='${newImportant}' WHERE id = ${topicId}`;
+    const sql = `UPDATE topics SET heading = '${newHeading}', description = '${newDescription}', scope = '${newScope}', updated_at= '${updateTime}', important=${newImportant} WHERE id = ${topicId}`;
     const updatedTopic = db.query(sql);
     return updatedTopic;
   } catch (err) {
@@ -181,7 +181,7 @@ exports.userToPrivateScope = async (topicId, userEmails, next) => {
         (user_id = user.data[0].id)
       ]
       await db.query(
-        `INSERT INTO accesses (topic_id, user_id) VALUES (?,?)`, queryParams
+        `INSERT INTO accesses (topic_id, user_id) VALUES ($1,$2)`, queryParams
       )
     }
     );

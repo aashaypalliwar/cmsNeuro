@@ -20,7 +20,7 @@ exports.createOneAnnouncement = async (announcement, next) => {
     const queryParams = [announcement.body, announcement.user_id, Date.now()];
     console.log(queryParams);
     return await db.query(
-      `INSERT INTO announcements (body,user_id,timestamp) VALUES(?,?,?)`,
+      `INSERT INTO announcements (body,user_id,timestamp) VALUES($1,$2,$3)`,
       queryParams
     );
   } catch (err) {
