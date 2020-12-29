@@ -23,19 +23,13 @@ exports.secySignup = async (req, res, next) => {
         designation,
       ];
 
-        const queryParams = [name,email,role,timeStamp,hashedPassword,"core"];
+      await db.query(
+        `INSERT INTO users (name, email, role, timestamp, password, designation) VALUES ($1,$2,$3,$4,$5,$6)`,
+        queryParams
+      );
+      console.log(i + 1);
+    }
 
-        await db.query(
-            `INSERT INTO users (name, email, role, timestamp, password, designation) VALUES ($1,$2,$3,$4,$5,$6)`,
-            queryParams
-          );
-          console.log(i+1);
-        
-    }
-    console.log("Hello World");
-    } catch (error) {
-       console.log(error); 
-    }
     res.status(200).json({
       message: "Secy Added Successfully",
     });
