@@ -40,7 +40,7 @@ module.exports.taskSchema = {
     assignable INTEGER DEFAULT 1,
     user_id INTEGER NOT NULL,
     topic_id INTEGER NOT NULL,
-    deadline BIGINT NOT NULL,
+    deadline TEXT NOT NULL,
     isArchived INTEGER DEFAULT 0,
     archived_at BIGINT,
     FOREIGN KEY(user_id) REFERENCES users(id),

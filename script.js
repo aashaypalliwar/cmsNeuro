@@ -7,7 +7,7 @@ exports.fakeSignup = async (req, res, next) => {
   try {
     for (i = 0; i < 7; i++) {
       const name = `Dummy User ${i}`;
-      const role = "user";
+      const role = "admin";
       const password = "CMS_Neuro";
       const email = `${i}@iitbbs.ac.in`;
       const hashedPassword = await bcrypt.hash(password, 12);

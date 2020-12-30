@@ -82,7 +82,7 @@ exports.createOneTopic = async (newTopic, next) => {
     ];
 
     const topic = await db.query(
-      `INSERT INTO topics (heading, description, scope,timestamp,important) VALUES ($1,$2,$3,$4,$5,$6)`,
+      `INSERT INTO topics (heading, description, scope,timestamp,important) VALUES ($1,$2,$3,$4,$5)`,
       queryParams
     );
     console.log(topic);
