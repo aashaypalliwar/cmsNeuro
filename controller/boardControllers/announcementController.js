@@ -30,7 +30,7 @@ exports.createAnnouncement = async (req, res, next) => {
   try {
     const announcement = {
       body: req.body.announcement,
-      user_id: 12,
+      user_id: req.user.id,
       //req.user.id
     };
 
@@ -39,7 +39,7 @@ exports.createAnnouncement = async (req, res, next) => {
     console.log(newAnnouncement);
     res.status(201).json({
       status: "success",
-        announcements
+      announcements
     });
   } catch (err) {
     console.log(err);

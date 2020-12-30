@@ -7,7 +7,7 @@ exports.fetchAllAnnouncements = async (next) => {
     const announcements = await db.query(
       `SELECT * FROM announcements WHERE isArchived = 0`
     );
-    return announcements.data.sort((a,b) => (a.timestamp > b.timestamp) ? -1 : 1);
+    return announcements.data.sort((a, b) => (a.timestamp > b.timestamp) ? -1 : 1);
   } catch (err) {
     console.log(err);
     throw err;
@@ -68,11 +68,11 @@ exports.archiveOneAnnouncement = async (announcement_id, next) => {
 };
 
 // fetchs a particular announcement
-exports.fetchOneAnnouncement = async(announcement_id,next) => {
-    try{
-        return (await db.query(`SELECT * FROM announcements WHERE id = ${announcement_id}`));
-    } catch(err) {
-        console.log(err);
-        return next(new AppError('Something went wrong',400));
-    }
+exports.fetchOneAnnouncement = async (announcement_id, next) => {
+  try {
+    return (await db.query(`SELECT * FROM announcements WHERE id = ${announcement_id}`));
+  } catch (err) {
+    console.log(err);
+    return next(new AppError('Something went wrong', 400));
+  }
 }
