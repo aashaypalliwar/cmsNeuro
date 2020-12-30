@@ -21,7 +21,7 @@ class Database {
     this.db.connect(async (err, client, done) => {
       try {
         if (err) throw err
-        console.log("Connectd to Database")
+        console.log("Connected to Database")
         await this.db.query(`CREATE TABLE IF NOT EXISTS ${userSchema.tableName} (${userSchema.tableSchema})`)
         await this.db.query(`CREATE TABLE IF NOT EXISTS ${topicSchema.tableName} (${topicSchema.tableSchema})`)
         await this.db.query(`CREATE TABLE IF NOT EXISTS ${taskSchema.tableName} (${taskSchema.tableSchema})`)
