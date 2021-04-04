@@ -26,7 +26,7 @@ exports.updateLeaderboard = async (next) => {
     const users = await db.query(
       `SELECT id,name,points,old_rank,current_rank FROM users WHERE tracking_points=1 ORDER BY points DESC`
     );
-    // console.log(users);
+    console.log(users);
     const userList = users.data;
     //error
     if (userList.length === 0)
@@ -46,7 +46,7 @@ exports.updateLeaderboard = async (next) => {
       previousPoints = user.points;
       //update the user in the databse
       await db.query(
-        `UPDATE users SET old_rank='${user.old_rank}', current_rank='${user.current_rank}' WHERE id='${user.id}'`
+        `UPDATE users SET old_rank=${user.old_rank}, current_rank=${user.current_rank} WHERE id='${user.id}'`
       );
     });
   } catch (err) {
